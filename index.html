@@ -156,11 +156,10 @@ const $     = id => document.getElementById(id);
 // ── 종로도서관 코드 탐색 ────────────────────────
 async function initLib() {
   try {
-    const r = await libFetch('srchLibs', { region: '11', dtl_region: '11110' });
-    let libs = r.response?.libs?.lib ?? [];
-    if (!Array.isArray(libs)) libs = [libs];
-    const found = libs.find(l => l.libName?.includes('종로도서관')) ?? libs[0];
-    if (found) { libCode = found.libCode; libName = found.libName; }
+    const r = await fetch(`${WORKER}/libcode`);
+    const d = await r.json();
+    libCode = d.libCode;
+    libName = d.libName;
     setStatus(true);
   } catch { setStatus(false); }
 }
