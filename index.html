@@ -4,85 +4,114 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>서재 — 말로 찾는 책</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Noto+Serif+KR:wght@300;400;500;600&family=Noto+Sans+KR:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0b0907;--surface:#141009;--card:#1b1610;--card-h:#221d15;--border:#2a231a;--border-h:rgba(201,169,110,.35);--accent:#c9a96e;--accent-s:rgba(201,169,110,.12);--txt:#ede3d2;--txt-m:#7a6b57;--txt-d:#3d3428;--green:#8ab87c;--green-bg:rgba(138,184,124,.09);--red:#c07a72;--red-bg:rgba(192,122,114,.09)}
+:root{
+  --bg:#f7f5f0;
+  --surface:#ffffff;
+  --border:#e8e3da;
+  --border-d:#d4cdc1;
+  --accent:#2d5a3d;
+  --accent-l:#e8f0eb;
+  --txt:#1a1a18;
+  --txt-m:#6b6560;
+  --txt-d:#b0aa9f;
+  --green:#2d5a3d;
+  --green-bg:#e8f0eb;
+  --red:#8b3a3a;
+  --red-bg:#f5eaea;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --shadow-h:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
+}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:'Noto Serif KR',serif;min-height:100vh;-webkit-font-smoothing:antialiased}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 60%,rgba(201,169,110,.04) 0%,transparent 70%),radial-gradient(ellipse 50% 70% at 85% 10%,rgba(80,60,40,.05) 0%,transparent 60%);pointer-events:none;z-index:0}
-.wrap{max-width:840px;margin:0 auto;padding:0 28px 80px;position:relative;z-index:1}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans KR',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 
-header{padding:52px 0 36px;border-bottom:1px solid var(--border);margin-bottom:48px}
-.eyebrow{font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:300;letter-spacing:.45em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.eyebrow::after{content:'';flex:1;max-width:40px;height:1px;background:var(--accent);opacity:.4}
-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,6vw,56px);font-weight:300;line-height:1.08;letter-spacing:-.025em}
+.wrap{max-width:760px;margin:0 auto;padding:0 24px 80px}
+
+/* ── HEADER ── */
+header{padding:56px 0 40px;margin-bottom:48px;border-bottom:1px solid var(--border)}
+.logo{font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);font-weight:400;line-height:1.15;color:var(--txt);letter-spacing:-.02em}
 h1 em{font-style:italic;color:var(--accent)}
-.sub{margin-top:12px;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:300;color:var(--txt-m);letter-spacing:.08em}
+.sub{margin-top:12px;font-size:12px;font-weight:300;color:var(--txt-m);line-height:1.7}
+.sub span{display:inline-flex;align-items:center;gap:4px;margin-right:10px}
+.sub span::before{content:'';width:4px;height:4px;background:var(--accent);border-radius:50%;opacity:.5}
 
-.search-wrap{margin-bottom:48px}
-.search-label{display:block;font-family:'Noto Sans KR',sans-serif;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--txt-m);margin-bottom:18px}
-.search-row{display:flex;align-items:center;border-bottom:1px solid var(--border);transition:border-color .3s}
-.search-row:focus-within{border-bottom-color:var(--accent)}
-#q{flex:1;background:none;border:none;outline:none;padding:18px 0;font-family:'Noto Serif KR',serif;font-size:19px;font-weight:300;color:var(--txt);caret-color:var(--accent)}
-#q::placeholder{color:var(--txt-d);font-style:italic}
-#goBtn{background:none;border:none;cursor:pointer;color:var(--accent);padding:8px 4px;font-size:22px;transition:transform .2s,opacity .2s}
-#goBtn:hover{transform:translateX(3px);opacity:.7}
-.chips{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
-.chip{font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:300;padding:5px 13px;border:1px solid var(--border);border-radius:100px;color:var(--txt-m);cursor:pointer;background:none;transition:all .2s}
-.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-s)}
+/* ── SEARCH ── */
+.search-box{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:6px 6px 6px 20px;display:flex;align-items:center;gap:8px;margin-bottom:16px;transition:border-color .2s,box-shadow .2s}
+.search-box:focus-within{border-color:var(--accent);box-shadow:var(--shadow-h)}
+#q{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:300;color:var(--txt);padding:10px 0;caret-color:var(--accent)}
+#q::placeholder{color:var(--txt-d)}
+#goBtn{background:var(--accent);color:#fff;border:none;padding:10px 20px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.05em;transition:opacity .2s;flex-shrink:0}
+#goBtn:hover{opacity:.85}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:40px}
+.chip{font-size:12px;font-weight:300;padding:6px 14px;border:1px solid var(--border-d);color:var(--txt-m);cursor:pointer;background:var(--surface);transition:all .15s;border-radius:100px}
+.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
 
-.interp{display:none;background:var(--surface);border-left:2px solid var(--accent);padding:20px 24px;margin-bottom:36px;animation:slideIn .3s ease}
+/* ── INTERPRETATION ── */
+.interp{display:none;background:var(--accent-l);border-left:3px solid var(--accent);padding:16px 20px;margin-bottom:32px;animation:fadeUp .25s ease}
 .interp.on{display:block}
-.interp-lbl{font-family:'Noto Sans KR',sans-serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.interp-txt{font-size:14px;line-height:1.75;color:var(--txt);margin-bottom:12px}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:3px 10px;background:var(--accent-s);border:1px solid rgba(201,169,110,.25);color:var(--accent);border-radius:3px}
+.interp-lbl{font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.interp-txt{font-size:14px;color:var(--txt);line-height:1.7;margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:11px;padding:3px 10px;background:var(--surface);border:1px solid var(--border-d);color:var(--txt-m);border-radius:3px}
 
-.loader{display:none;padding:60px 0;text-align:center}
+/* ── LOADER ── */
+.loader{display:none;padding:56px 0;text-align:center}
 .loader.on{display:block}
-.loader-txt{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--txt-m);animation:breathe 2s ease-in-out infinite}
-.loader-bar{margin:20px auto 0;width:100px;height:1px;background:var(--border);overflow:hidden}
-.loader-fill{height:100%;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:sweep 1.6s ease-in-out infinite}
+.loader-txt{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--txt-m);animation:breathe 1.8s ease-in-out infinite}
+.loader-dots{margin-top:16px;display:flex;justify-content:center;gap:6px}
+.loader-dots span{width:5px;height:5px;background:var(--accent);border-radius:50%;opacity:.3;animation:dot 1.4s ease-in-out infinite}
+.loader-dots span:nth-child(2){animation-delay:.2s}
+.loader-dots span:nth-child(3){animation-delay:.4s}
 
-.r-header{display:none;justify-content:space-between;align-items:baseline;margin-bottom:28px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+/* ── RESULTS ── */
+.r-header{display:none;justify-content:space-between;align-items:baseline;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
 .r-header.on{display:flex}
-.r-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300}
-.r-count{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--txt-m)}
+.r-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--txt)}
+.r-count{font-size:12px;color:var(--txt-m)}
 
-.grid{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--card);border:1px solid var(--border);display:grid;grid-template-columns:80px 1fr auto;overflow:hidden;opacity:0;transform:translateY(8px);animation:rise .4s forwards;transition:border-color .25s,background .25s}
-.card:hover{background:var(--card-h);border-color:var(--border-h)}
-.cvr-wrap{background:var(--surface);display:flex;align-items:stretch}
-.cvr{width:80px;height:100%;min-height:112px;object-fit:cover;display:block}
-.cvr-ph{width:80px;min-height:112px;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--txt-d)}
-.cbody{padding:18px 20px 16px;min-width:0}
-.ctitle{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:500;line-height:1.5;color:var(--txt);margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cauthor{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--txt-m);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmeta{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:var(--txt-d)}
-.cloans{margin-top:7px;font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--txt-m)}
-.avail-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-left:1px solid var(--border);min-width:90px;gap:5px}
-.badge{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:5px 9px;border-radius:3px;white-space:nowrap;text-align:center}
-.b-ok{background:var(--green-bg);border:1px solid rgba(138,184,124,.3);color:var(--green)}
-.b-no{background:var(--red-bg);border:1px solid rgba(192,122,114,.25);color:var(--red)}
-.b-wait{background:rgba(60,50,40,.4);border:1px solid var(--border);color:var(--txt-m);animation:breathe 1.4s ease-in-out infinite}
-.alib{font-family:'Noto Sans KR',sans-serif;font-size:9px;color:var(--txt-d);letter-spacing:.04em;text-align:center;line-height:1.5}
+/* ── CARDS ── */
+.grid{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--surface);border:1px solid var(--border);display:grid;grid-template-columns:72px 1fr auto;box-shadow:var(--shadow);opacity:0;transform:translateY(6px);animation:fadeUp .35s forwards;transition:border-color .2s,box-shadow .2s}
+.card:hover{border-color:var(--border-d);box-shadow:var(--shadow-h)}
+.cvr-wrap{overflow:hidden;background:#f0ede8}
+.cvr{width:72px;height:100%;min-height:104px;object-fit:cover;display:block}
+.cvr-ph{width:72px;min-height:104px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--txt-d)}
+.cbody{padding:16px 18px;min-width:0}
+.ctitle{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;line-height:1.5;color:var(--txt);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cauthor{font-size:12px;font-weight:300;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmeta{font-size:11px;color:var(--txt-d)}
+.cloans{margin-top:6px;font-size:11px;color:var(--txt-m);display:flex;align-items:center;gap:4px}
+.cloans::before{content:'';width:3px;height:3px;background:var(--accent);border-radius:50%;opacity:.6}
 
-.err{display:none;background:rgba(192,122,114,.04);border:1px solid rgba(192,122,114,.2);padding:18px 22px;margin-bottom:28px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--red);line-height:1.7;white-space:pre-line}
+.avail-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 16px;border-left:1px solid var(--border);min-width:84px;gap:4px;background:#fafaf8}
+.badge{font-size:11px;font-weight:500;padding:4px 8px;border-radius:2px;white-space:nowrap;text-align:center;letter-spacing:.02em}
+.b-ok{background:var(--green-bg);color:var(--green)}
+.b-no{background:var(--red-bg);color:var(--red)}
+.b-wait{background:#f0ede8;color:var(--txt-d);animation:breathe 1.4s ease-in-out infinite}
+.alib{font-size:9px;font-weight:300;color:var(--txt-d);text-align:center;line-height:1.5;letter-spacing:.03em}
+
+/* ── ERROR ── */
+.err{display:none;background:#fff8f8;border:1px solid #f0d4d4;padding:16px 20px;margin-bottom:24px;font-size:13px;color:var(--red);line-height:1.7;white-space:pre-line}
 .err.on{display:block}
 
-footer{margin-top:72px;padding:24px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.ft-l{font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:300;color:var(--txt-d);letter-spacing:.15em;text-transform:uppercase}
-.ft-r{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:var(--txt-d);display:flex;align-items:center;gap:6px}
-.dot{font-size:8px}
+/* ── FOOTER ── */
+footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.ft-l{font-size:11px;font-weight:300;color:var(--txt-d);letter-spacing:.1em;text-transform:uppercase}
+.ft-r{font-size:11px;color:var(--txt-d);display:flex;align-items:center;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--txt-d);display:inline-block}
+.dot.ok{background:var(--green)}
+.dot.err{background:var(--red)}
 
-@keyframes rise{to{opacity:1;transform:translateY(0)}}
-@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
-@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
-@media(max-width:540px){
-  .card{grid-template-columns:64px 1fr}
-  .avail-col{grid-column:2;border-left:none;border-top:1px solid var(--border);flex-direction:row;justify-content:flex-start;padding:10px 16px}
+@keyframes dot{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+@media(max-width:520px){
+  .card{grid-template-columns:60px 1fr}
+  .avail-col{grid-column:2;border-left:none;border-top:1px solid var(--border);flex-direction:row;justify-content:flex-start;padding:10px 14px;background:none}
 }
 </style>
 </head>
@@ -90,32 +119,34 @@ footer{margin-top:72px;padding:24px 0;border-top:1px solid var(--border);display
 <div class="wrap">
 
 <header>
-  <div class="eyebrow">서재 · Seojae</div>
+  <div class="logo">서재 · Seojae</div>
   <h1>읽고 싶은 책을,<br><em>말로</em> 찾아드려요</h1>
-  <p class="sub">Gemini가 맥락을 이해 → 도서관정보나루 API로 검색 → 종로도서관 대출 현황 실시간 확인</p>
+  <p class="sub">
+    <span>Gemini 자연어 이해</span>
+    <span>도서관정보나루 도서 검색</span>
+    <span>종로도서관 대출 현황</span>
+  </p>
 </header>
 
-<div class="search-wrap">
-  <span class="search-label">어떤 책을 찾고 계신가요?</span>
-  <div class="search-row">
-    <input id="q" type="text" autocomplete="off" spellcheck="false"
-      placeholder="예) 요새 인기있는 철학책 추천해줘~ 염세적인걸로~" />
-    <button id="goBtn" onclick="go()">→</button>
-  </div>
-  <div class="chips">
-    <button class="chip" onclick="fill(this)">염세적인 철학책</button>
-    <button class="chip" onclick="fill(this)">죽음과 실존을 다룬 소설</button>
-    <button class="chip" onclick="fill(this)">자본주의 비판서</button>
-    <button class="chip" onclick="fill(this)">동양 고전 철학</button>
-    <button class="chip" onclick="fill(this)">SF 디스토피아 소설</button>
-    <button class="chip" onclick="fill(this)">인간 본성에 관한 책</button>
-    <button class="chip" onclick="fill(this)">근대 한국소설</button>
-    <button class="chip" onclick="fill(this)">불안과 우울 심리책</button>
-  </div>
+<div class="search-box">
+  <input id="q" type="text" autocomplete="off" spellcheck="false"
+    placeholder="예) 요새 인기있는 철학책, 염세적인걸로~" />
+  <button id="goBtn" onclick="go()">검색</button>
+</div>
+
+<div class="chips">
+  <button class="chip" onclick="fill(this)">염세적인 철학책</button>
+  <button class="chip" onclick="fill(this)">죽음과 실존을 다룬 소설</button>
+  <button class="chip" onclick="fill(this)">자본주의 비판서</button>
+  <button class="chip" onclick="fill(this)">동양 고전 철학</button>
+  <button class="chip" onclick="fill(this)">SF 디스토피아 소설</button>
+  <button class="chip" onclick="fill(this)">인간 본성에 관한 책</button>
+  <button class="chip" onclick="fill(this)">근대 한국소설</button>
+  <button class="chip" onclick="fill(this)">불안과 우울 심리책</button>
 </div>
 
 <div class="interp" id="interp">
-  <div class="interp-lbl">Gemini 맥락 해석</div>
+  <div class="interp-lbl">Gemini 해석</div>
   <div class="interp-txt" id="interpTxt"></div>
   <div class="tags" id="interpTags"></div>
 </div>
@@ -123,8 +154,8 @@ footer{margin-top:72px;padding:24px 0;border-top:1px solid var(--border);display
 <div class="err" id="errBox"></div>
 
 <div class="loader" id="loader">
-  <div class="loader-txt" id="loaderTxt">책을 찾는 중…</div>
-  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-txt" id="loaderTxt">책을 찾는 중</div>
+  <div class="loader-dots"><span></span><span></span><span></span></div>
 </div>
 
 <div class="r-header" id="rHeader">
@@ -137,23 +168,18 @@ footer{margin-top:72px;padding:24px 0;border-top:1px solid var(--border);display
 <footer>
   <div class="ft-l">서재 · Seojae</div>
   <div class="ft-r">
-    <span class="dot" id="statusDot" style="color:var(--txt-d)">●</span>
+    <span class="dot" id="statusDot"></span>
     <span id="libStatus">연결 중…</span>
   </div>
 </footer>
 
 </div>
-
 <script>
-// ── Worker URL: 배포 후 여기 교체 ──────────────
-// 예: https://seojae.your-name.workers.dev
 const WORKER = 'https://seojae.hdh1231.workers.dev';
-
-let libCode = '111003';
+let libCode = '111021';
 let libName = '종로도서관';
-const $     = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-// ── 종로도서관 코드 탐색 ────────────────────────
 async function initLib() {
   try {
     const r = await fetch(`${WORKER}/libcode`);
@@ -165,24 +191,22 @@ async function initLib() {
 }
 
 function setStatus(ok) {
-  $('statusDot').style.color = ok ? 'var(--green)' : 'var(--red)';
-  $('libStatus').textContent = ok ? `${libName} 연결됨` : `${libName} (오류)`;
+  $('statusDot').className = 'dot ' + (ok ? 'ok' : 'err');
+  $('libStatus').textContent = ok ? `${libName} 연결됨` : `${libName} 오류`;
 }
 
-// ── Worker 프록시 통해 도서관 API 호출 ──────────
 async function libFetch(endpoint, params = {}) {
   const qs = new URLSearchParams({ _endpoint: endpoint, ...params });
-  const r  = await fetch(`${WORKER}/library?${qs}`);
+  const r = await fetch(`${WORKER}/library?${qs}`);
   if (!r.ok) throw new Error(`library ${r.status}`);
   return r.json();
 }
 
-// ── Worker 통해 Gemini 자연어 해석 ─────────────
 async function interpret(query) {
   const r = await fetch(`${WORKER}/gemini`, {
-    method:  'POST',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ query }),
+    body: JSON.stringify({ query }),
   });
   if (!r.ok) {
     const e = await r.json().catch(() => ({}));
@@ -191,15 +215,13 @@ async function interpret(query) {
   return r.json();
 }
 
-// ── 도서 검색 ───────────────────────────────────
 async function searchBooks(kw, size = 10) {
   const d = await libFetch('srchBooks', { keyword: kw, pageSize: size });
   let docs = d.response?.docs?.doc ?? [];
   if (!Array.isArray(docs)) docs = [docs];
-  return docs;
+  return docs.map(item => item.doc ?? item);
 }
 
-// ── 대출 현황 ───────────────────────────────────
 async function checkAvail(isbn13) {
   if (!isbn13) return null;
   try {
@@ -208,15 +230,14 @@ async function checkAvail(isbn13) {
   } catch { return null; }
 }
 
-// ── 카드 렌더 ───────────────────────────────────
 function renderCard(book, idx) {
-  const div    = document.createElement('div');
+  const div = document.createElement('div');
   div.className = 'card';
-  div.style.animationDelay = `${idx * 50}ms`;
+  div.style.animationDelay = `${idx * 45}ms`;
   const hasImg = !!book.bookImageURL;
-  const meta   = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
-  const loans  = book.loan_count
-    ? `<div class="cloans">📊 대출 ${Number(book.loan_count).toLocaleString()}회</div>` : '';
+  const meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
+  const loans = book.loan_count
+    ? `<div class="cloans">대출 ${Number(book.loan_count).toLocaleString()}회</div>` : '';
   div.innerHTML = `
     <div class="cvr-wrap">
       ${hasImg ? `<img class="cvr" src="${book.bookImageURL}" alt=""
@@ -237,46 +258,46 @@ function renderCard(book, idx) {
 
 async function updateAvail(isbn13, idx) {
   const col = $(`av${idx}`); if (!col) return;
-  const b   = col.querySelector('.badge');
-  const v   = await checkAvail(isbn13);
-  if (v === 'Y')      { b.className = 'badge b-ok'; b.textContent = '대출 가능 ✓'; }
+  const b = col.querySelector('.badge');
+  const v = await checkAvail(isbn13);
+  if (v === 'Y')      { b.className = 'badge b-ok'; b.textContent = '대출 가능'; }
   else if (v === 'N') { b.className = 'badge b-no'; b.textContent = '대출 불가'; }
-  else                { b.className = 'badge b-no'; b.textContent = isbn13 ? '확인 불가' : 'ISBN 없음'; }
+  else                { b.className = 'badge b-no'; b.textContent = '확인 불가'; }
 }
 
-// ── UI helpers ──────────────────────────────────
 function loading(on, txt = '') {
   $('loader').classList.toggle('on', on);
   if (txt) $('loaderTxt').textContent = txt;
 }
+
 function clearAll() {
   $('errBox').classList.remove('on');
   $('grid').innerHTML = '';
   $('rHeader').classList.remove('on');
   $('interp').classList.remove('on');
 }
+
 function fill(btn) { $('q').value = btn.textContent; go(); }
 
-// ── MAIN ────────────────────────────────────────
 async function go() {
   const q = $('q').value.trim(); if (!q) return;
   clearAll();
 
-  loading(true, '🤔 Gemini가 맥락을 파악하는 중…');
+  loading(true, 'Gemini가 맥락을 파악하는 중');
   let parsed;
   try {
     parsed = await interpret(q);
   } catch(e) {
     loading(false);
-    $('errBox').textContent = `Gemini 오류\n\nWorker가 배포되었는지 확인해주세요.\nWORKER URL: ${WORKER}\n\n상세: ${e.message}`;
+    $('errBox').textContent = `Gemini 오류\n${e.message}`;
     $('errBox').classList.add('on'); return;
   }
 
   $('interpTxt').textContent = parsed.description;
-  $('interpTags').innerHTML  = (parsed.keywords ?? []).map(k => `<span class="tag">${k}</span>`).join('');
+  $('interpTags').innerHTML = (parsed.keywords ?? []).map(k => `<span class="tag">${k}</span>`).join('');
   $('interp').classList.add('on');
 
-  loading(true, '📚 책장을 뒤지는 중…');
+  loading(true, '책장을 뒤지는 중');
   let books = [];
   try {
     books = await searchBooks(parsed.primaryKeyword, 10);
@@ -298,7 +319,7 @@ async function go() {
   }
 
   $('rTitle').textContent = `"${parsed.primaryKeyword}" 관련 도서`;
-  $('rCount').textContent = `${books.length}권 발견`;
+  $('rCount').textContent = `${books.length}권`;
   $('rHeader').classList.add('on');
 
   const frag = document.createDocumentFragment();
