@@ -4,113 +4,114 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>서재 — 말로 찾는 책</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f5f0;
-  --surface:#ffffff;
-  --border:#e8e3da;
-  --border-d:#d4cdc1;
-  --accent:#2d5a3d;
-  --accent-l:#e8f0eb;
-  --txt:#1a1a18;
-  --txt-m:#6b6560;
-  --txt-d:#b0aa9f;
-  --green:#2d5a3d;
-  --green-bg:#e8f0eb;
-  --red:#8b3a3a;
-  --red-bg:#f5eaea;
-  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --bg:#f7f5f0;--surface:#fff;--border:#e8e3da;--border-d:#d0c9be;
+  --accent:#2d5a3d;--accent-l:#e8f0eb;
+  --txt:#1a1a18;--txt-m:#6b6560;--txt-d:#b0aa9f;
+  --green:#2d5a3d;--green-bg:#e8f0eb;
+  --red:#8b3a3a;--red-bg:#f5eaea;
+  --amber:#7a5c1e;--amber-bg:#fdf3dc;
+  --shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
   --shadow-h:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--txt);font-family:'Noto Sans KR',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px 80px}
 
-.wrap{max-width:760px;margin:0 auto;padding:0 24px 80px}
-
-/* ── HEADER ── */
-header{padding:56px 0 40px;margin-bottom:48px;border-bottom:1px solid var(--border)}
-.logo{font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
-h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,48px);font-weight:400;line-height:1.15;color:var(--txt);letter-spacing:-.02em}
+/* HEADER */
+header{padding:48px 0 36px;margin-bottom:40px;border-bottom:1px solid var(--border)}
+.logo{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(30px,5vw,44px);font-weight:400;line-height:1.15;letter-spacing:-.02em}
 h1 em{font-style:italic;color:var(--accent)}
-.sub{margin-top:12px;font-size:12px;font-weight:300;color:var(--txt-m);line-height:1.7}
-.sub span{display:inline-flex;align-items:center;gap:4px;margin-right:10px}
-.sub span::before{content:'';width:4px;height:4px;background:var(--accent);border-radius:50%;opacity:.5}
+.sub{margin-top:10px;font-size:12px;font-weight:300;color:var(--txt-m)}
 
-/* ── SEARCH ── */
-.search-box{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:6px 6px 6px 20px;display:flex;align-items:center;gap:8px;margin-bottom:16px;transition:border-color .2s,box-shadow .2s}
+/* SEARCH */
+.search-box{background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;padding:6px 6px 6px 20px;gap:8px;margin-bottom:14px;transition:border-color .2s,box-shadow .2s}
 .search-box:focus-within{border-color:var(--accent);box-shadow:var(--shadow-h)}
 #q{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:300;color:var(--txt);padding:10px 0;caret-color:var(--accent)}
 #q::placeholder{color:var(--txt-d)}
-#goBtn{background:var(--accent);color:#fff;border:none;padding:10px 20px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;letter-spacing:.05em;transition:opacity .2s;flex-shrink:0}
+#goBtn{background:var(--accent);color:#fff;border:none;padding:11px 22px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s;flex-shrink:0}
 #goBtn:hover{opacity:.85}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:40px}
 .chip{font-size:12px;font-weight:300;padding:6px 14px;border:1px solid var(--border-d);color:var(--txt-m);cursor:pointer;background:var(--surface);transition:all .15s;border-radius:100px}
 .chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
 
-/* ── INTERPRETATION ── */
-.interp{display:none;background:var(--accent-l);border-left:3px solid var(--accent);padding:16px 20px;margin-bottom:32px;animation:fadeUp .25s ease}
-.interp.on{display:block}
-.interp-lbl{font-size:10px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
-.interp-txt{font-size:14px;color:var(--txt);line-height:1.7;margin-bottom:10px}
-.tags{display:flex;flex-wrap:wrap;gap:5px}
-.tag{font-size:11px;padding:3px 10px;background:var(--surface);border:1px solid var(--border-d);color:var(--txt-m);border-radius:3px}
-
-/* ── LOADER ── */
-.loader{display:none;padding:56px 0;text-align:center}
+/* LOADER */
+.loader{display:none;padding:52px 0;text-align:center}
 .loader.on{display:block}
-.loader-txt{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--txt-m);animation:breathe 1.8s ease-in-out infinite}
-.loader-dots{margin-top:16px;display:flex;justify-content:center;gap:6px}
-.loader-dots span{width:5px;height:5px;background:var(--accent);border-radius:50%;opacity:.3;animation:dot 1.4s ease-in-out infinite}
+.loader-txt{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--txt-m);animation:breathe 1.8s ease-in-out infinite;margin-bottom:16px}
+.loader-dots{display:flex;justify-content:center;gap:6px}
+.loader-dots span{width:5px;height:5px;background:var(--accent);border-radius:50%;opacity:.25;animation:dot 1.4s ease-in-out infinite}
 .loader-dots span:nth-child(2){animation-delay:.2s}
 .loader-dots span:nth-child(3){animation-delay:.4s}
 
-/* ── RESULTS ── */
-.r-header{display:none;justify-content:space-between;align-items:baseline;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+/* 사서 말풍선 */
+.reply-wrap{display:none;margin-bottom:36px;animation:fadeUp .3s ease}
+.reply-wrap.on{display:flex;gap:14px;align-items:flex-start}
+.avatar{width:40px;height:40px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
+.bubble{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 22px;flex:1;position:relative}
+.bubble::before{content:'';position:absolute;left:-8px;top:14px;border:7px solid transparent;border-right-color:var(--border)}
+.bubble::after{content:'';position:absolute;left:-6px;top:15px;border:6px solid transparent;border-right-color:var(--surface)}
+.bubble-name{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.bubble-txt{font-size:14px;line-height:1.85;color:var(--txt);font-weight:300}
+
+/* RESULTS */
+.r-header{display:none;justify-content:space-between;align-items:baseline;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
 .r-header.on{display:flex}
-.r-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--txt)}
+.r-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:400}
 .r-count{font-size:12px;color:var(--txt-m)}
 
-/* ── CARDS ── */
-.grid{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--surface);border:1px solid var(--border);display:grid;grid-template-columns:72px 1fr auto;box-shadow:var(--shadow);opacity:0;transform:translateY(6px);animation:fadeUp .35s forwards;transition:border-color .2s,box-shadow .2s}
+/* CARDS */
+.grid{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);opacity:0;transform:translateY(6px);animation:fadeUp .4s forwards;transition:border-color .2s,box-shadow .2s}
 .card:hover{border-color:var(--border-d);box-shadow:var(--shadow-h)}
+
+/* 카드 상단: 표지 + 정보 + 대출현황 */
+.card-top{display:grid;grid-template-columns:72px 1fr auto}
 .cvr-wrap{overflow:hidden;background:#f0ede8}
-.cvr{width:72px;height:100%;min-height:104px;object-fit:cover;display:block}
-.cvr-ph{width:72px;min-height:104px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--txt-d)}
+.cvr{width:72px;height:100%;min-height:108px;object-fit:cover;display:block}
+.cvr-ph{width:72px;min-height:108px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--txt-d)}
 .cbody{padding:16px 18px;min-width:0}
 .ctitle{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;line-height:1.5;color:var(--txt);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cauthor{font-size:12px;font-weight:300;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cmeta{font-size:11px;color:var(--txt-d)}
-.cloans{margin-top:6px;font-size:11px;color:var(--txt-m);display:flex;align-items:center;gap:4px}
-.cloans::before{content:'';width:3px;height:3px;background:var(--accent);border-radius:50%;opacity:.6}
+.cloans{margin-top:6px;font-size:11px;color:var(--txt-m)}
 
-.avail-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 16px;border-left:1px solid var(--border);min-width:84px;gap:4px;background:#fafaf8}
-.badge{font-size:11px;font-weight:500;padding:4px 8px;border-radius:2px;white-space:nowrap;text-align:center;letter-spacing:.02em}
+/* 대출 현황 컬럼 */
+.avail-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 14px;border-left:1px solid var(--border);min-width:82px;gap:5px;background:#fafaf8}
+.badge{font-size:11px;font-weight:500;padding:4px 8px;border-radius:2px;white-space:nowrap;text-align:center}
 .b-ok{background:var(--green-bg);color:var(--green)}
 .b-no{background:var(--red-bg);color:var(--red)}
 .b-wait{background:#f0ede8;color:var(--txt-d);animation:breathe 1.4s ease-in-out infinite}
-.alib{font-size:9px;font-weight:300;color:var(--txt-d);text-align:center;line-height:1.5;letter-spacing:.03em}
+.b-link{background:var(--amber-bg);color:var(--amber);text-decoration:none;display:block;text-align:center;font-size:10px;padding:3px 6px;border-radius:2px;margin-top:2px}
+.b-link:hover{opacity:.8}
+.alib{font-size:9px;font-weight:300;color:var(--txt-d);text-align:center;line-height:1.5}
+.aloc{font-size:9px;color:var(--txt-d);text-align:center;line-height:1.4;margin-top:2px;max-width:70px;word-break:keep-all}
 
-/* ── ERROR ── */
+/* 추천 이유 (카드 하단) */
+.reason{border-top:1px solid var(--border);padding:12px 18px;background:#fafaf8;font-size:13px;line-height:1.75;color:var(--txt-m);font-weight:300;font-style:italic}
+.reason::before{content:'💬 ';font-style:normal}
+
+/* ERR */
 .err{display:none;background:#fff8f8;border:1px solid #f0d4d4;padding:16px 20px;margin-bottom:24px;font-size:13px;color:var(--red);line-height:1.7;white-space:pre-line}
 .err.on{display:block}
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .ft-l{font-size:11px;font-weight:300;color:var(--txt-d);letter-spacing:.1em;text-transform:uppercase}
 .ft-r{font-size:11px;color:var(--txt-d);display:flex;align-items:center;gap:6px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--txt-d);display:inline-block}
-.dot.ok{background:var(--green)}
-.dot.err{background:var(--red)}
+.sdot{width:6px;height:6px;border-radius:50%;display:inline-block;background:var(--txt-d)}
+.sdot.ok{background:var(--green)}
 
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 @keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
-@keyframes dot{0%,80%,100%{opacity:.3}40%{opacity:1}}
+@keyframes dot{0%,80%,100%{opacity:.25}40%{opacity:1}}
 
 @media(max-width:520px){
-  .card{grid-template-columns:60px 1fr}
+  .card-top{grid-template-columns:60px 1fr}
   .avail-col{grid-column:2;border-left:none;border-top:1px solid var(--border);flex-direction:row;justify-content:flex-start;padding:10px 14px;background:none}
 }
 </style>
@@ -121,17 +122,13 @@ footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display
 <header>
   <div class="logo">서재 · Seojae</div>
   <h1>읽고 싶은 책을,<br><em>말로</em> 찾아드려요</h1>
-  <p class="sub">
-    <span>Gemini 자연어 이해</span>
-    <span>도서관정보나루 도서 검색</span>
-    <span>종로도서관 대출 현황</span>
-  </p>
+  <p class="sub">Gemini가 맥락을 이해하고 딱 맞는 책을 직접 골라드려요 · 종로도서관 실시간 대출 현황</p>
 </header>
 
 <div class="search-box">
   <input id="q" type="text" autocomplete="off" spellcheck="false"
-    placeholder="예) 요새 인기있는 철학책, 염세적인걸로~" />
-  <button id="goBtn" onclick="go()">검색</button>
+    placeholder="예) 머리아플때 읽으면 좋은 책, 염세적인 철학책" />
+  <button id="goBtn" onclick="go()">찾아줘</button>
 </div>
 
 <div class="chips">
@@ -145,16 +142,19 @@ footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display
   <button class="chip" onclick="fill(this)">불안과 우울 심리책</button>
 </div>
 
-<div class="interp" id="interp">
-  <div class="interp-lbl">Gemini 해석</div>
-  <div class="interp-txt" id="interpTxt"></div>
-  <div class="tags" id="interpTags"></div>
+<!-- 사서 말풍선 -->
+<div class="reply-wrap" id="replyWrap">
+  <div class="avatar">📚</div>
+  <div class="bubble">
+    <div class="bubble-name">종로도서관 사서</div>
+    <div class="bubble-txt" id="bubbleTxt"></div>
+  </div>
 </div>
 
 <div class="err" id="errBox"></div>
 
 <div class="loader" id="loader">
-  <div class="loader-txt" id="loaderTxt">책을 찾는 중</div>
+  <div class="loader-txt" id="loaderTxt">책을 고르는 중</div>
   <div class="loader-dots"><span></span><span></span><span></span></div>
 </div>
 
@@ -168,7 +168,7 @@ footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display
 <footer>
   <div class="ft-l">서재 · Seojae</div>
   <div class="ft-r">
-    <span class="dot" id="statusDot"></span>
+    <span class="sdot" id="statusDot"></span>
     <span id="libStatus">연결 중…</span>
   </div>
 </footer>
@@ -176,156 +176,203 @@ footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display
 </div>
 <script>
 const WORKER = 'https://seojae.hdh1231.workers.dev';
-let libCode = '111021';
-let libName = '종로도서관';
+let libCode = '111021', libName = '종로도서관';
 const $ = id => document.getElementById(id);
 
+// 초기화
 async function initLib() {
   try {
-    const r = await fetch(`${WORKER}/libcode`);
-    const d = await r.json();
-    libCode = d.libCode;
-    libName = d.libName;
-    setStatus(true);
-  } catch { setStatus(false); }
-}
-
-function setStatus(ok) {
-  $('statusDot').className = 'dot ' + (ok ? 'ok' : 'err');
-  $('libStatus').textContent = ok ? `${libName} 연결됨` : `${libName} 오류`;
-}
-
-async function libFetch(endpoint, params = {}) {
-  const qs = new URLSearchParams({ _endpoint: endpoint, ...params });
-  const r = await fetch(`${WORKER}/library?${qs}`);
-  if (!r.ok) throw new Error(`library ${r.status}`);
-  return r.json();
-}
-
-async function interpret(query) {
-  const r = await fetch(`${WORKER}/gemini`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query }),
-  });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    throw new Error(e.error ?? `Gemini ${r.status}`);
+    const d = await (await fetch(`${WORKER}/libcode`)).json();
+    libCode = d.libCode; libName = d.libName;
+    $('statusDot').className = 'sdot ok';
+    $('libStatus').textContent = `${libName} 연결됨`;
+  } catch {
+    $('statusDot').className = 'sdot';
+    $('libStatus').textContent = `${libName} 오류`;
   }
+}
+
+// Gemini: 책 직접 추천 + 이유
+async function recommend(query) {
+  const r = await fetch(`${WORKER}/gemini`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ query,
+      prompt_override: `당신은 종로도서관 베테랑 사서입니다. 친근하고 따뜻하게 대화하세요.
+
+사용자 요청에 딱 맞는 책 3권을 직접 골라 추천해주세요.
+
+JSON만 반환 (마크다운 없이):
+{
+  "reply": "사용자에게 건네는 말 2-3문장. 요청을 공감하고 왜 이 책들을 골랐는지 자연스럽게. 따뜻하고 재치있게.",
+  "books": [
+    {"title":"정확한 한국어판 책 제목","author":"저자명","reason":"이 책을 추천하는 이유 1-2문장. 사용자 상황에 맞게 구체적으로.","searchKeyword":"도서관 검색용 키워드 (저자명 또는 제목 핵심어)"}
+  ]
+}
+
+규칙:
+- books는 반드시 3개
+- 실제 도서관에 있을 법한 유명한 책
+- reply는 딱딱하지 않게, 사서가 직접 말하는 것처럼
+- searchKeyword는 도서관 검색에 효과적인 단어 1개
+
+사용자: ${query}`
+    })
+  });
+  if (!r.ok) throw new Error((await r.json().catch(()=>({}))).error ?? `오류 ${r.status}`);
   return r.json();
 }
 
-async function searchBooks(kw, size = 10) {
-  const d = await libFetch('srchBooks', { keyword: kw, pageSize: size });
-  // docs는 [{doc:{...}}, {doc:{...}}] 형태의 배열
+// 도서관 API: 책 검색
+async function searchBook(keyword) {
+  const qs = new URLSearchParams({_endpoint:'srchBooks', keyword, pageSize:'5'});
+  const d = await (await fetch(`${WORKER}/library?${qs}`)).json();
   let docs = d.response?.docs ?? [];
   if (!Array.isArray(docs)) docs = [docs];
-  return docs.map(item => item.doc ?? item);
+  return docs.map(i => i.doc ?? i).filter(b => b.bookname);
 }
 
-async function checkAvail(isbn13) {
-  if (!isbn13) return null;
+// 종로도서관 홈페이지 크롤링: 실제 대출 현황
+async function realCheck(isbn) {
+  if (!isbn) return null;
   try {
-    const d = await libFetch('bookExist', { libCode, isbn13 });
-    return d.response?.result?.loanAvailable ?? null;
+    const d = await (await fetch(`${WORKER}/realcheck?isbn=${isbn}`)).json();
+    return d;
   } catch { return null; }
 }
 
-function renderCard(book, idx) {
+// 카드 렌더
+function renderCard(book, reason, idx) {
   const div = document.createElement('div');
   div.className = 'card';
-  div.style.animationDelay = `${idx * 45}ms`;
+  div.style.animationDelay = `${idx * 80}ms`;
   const hasImg = !!book.bookImageURL;
   const meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
-  const loans = book.loan_count
-    ? `<div class="cloans">대출 ${Number(book.loan_count).toLocaleString()}회</div>` : '';
+  const loans = book.loan_count ? `<div class="cloans">대출 ${Number(book.loan_count).toLocaleString()}회</div>` : '';
+
   div.innerHTML = `
-    <div class="cvr-wrap">
-      ${hasImg ? `<img class="cvr" src="${book.bookImageURL}" alt=""
-        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-      <div class="cvr-ph" style="${hasImg ? 'display:none' : ''}">📖</div>
+    <div class="card-top">
+      <div class="cvr-wrap">
+        ${hasImg ? `<img class="cvr" src="${book.bookImageURL}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="cvr-ph" style="${hasImg?'display:none':''}">📖</div>
+      </div>
+      <div class="cbody">
+        <div class="ctitle">${book.bookname||'제목 없음'}</div>
+        <div class="cauthor">${book.authors||'저자 미상'}</div>
+        <div class="cmeta">${meta}</div>
+        ${loans}
+      </div>
+      <div class="avail-col" id="av${idx}">
+        <span class="badge b-wait">확인 중</span>
+        <div class="alib">${libName}</div>
+      </div>
     </div>
-    <div class="cbody">
-      <div class="ctitle">${book.bookname || '제목 없음'}</div>
-      <div class="cauthor">${book.authors || '저자 미상'}</div>
-      <div class="cmeta">${meta}</div>${loans}
-    </div>
-    <div class="avail-col" id="av${idx}">
-      <span class="badge b-wait">확인 중</span>
-      <div class="alib">${libName}</div>
-    </div>`;
+    ${reason ? `<div class="reason">${reason}</div>` : ''}`;
   return div;
 }
 
-async function updateAvail(isbn13, idx) {
+async function updateAvail(isbn, idx) {
   const col = $(`av${idx}`); if (!col) return;
-  const b = col.querySelector('.badge');
-  const v = await checkAvail(isbn13);
-  if (v === 'Y')      { b.className = 'badge b-ok'; b.textContent = '대출 가능'; }
-  else if (v === 'N') { b.className = 'badge b-no'; b.textContent = '대출 불가'; }
-  else                { b.className = 'badge b-no'; b.textContent = '확인 불가'; }
+  const badge = col.querySelector('.badge');
+  const result = await realCheck(isbn);
+
+  if (!result) {
+    badge.className = 'badge b-no';
+    badge.textContent = '확인 불가';
+    return;
+  }
+
+  if (result.available) {
+    badge.className = 'badge b-ok';
+    badge.textContent = '대출 가능';
+  } else {
+    badge.className = 'badge b-no';
+    badge.textContent = '대출 불가';
+  }
+
+  // 자료실 위치 표시
+  if (result.location) {
+    const loc = document.createElement('div');
+    loc.className = 'aloc';
+    loc.textContent = result.location.replace('[종로]','').trim();
+    col.appendChild(loc);
+  }
+
+  // 홈페이지 링크
+  if (result.detailUrl) {
+    const link = document.createElement('a');
+    link.className = 'b-link';
+    link.href = result.detailUrl;
+    link.target = '_blank';
+    link.textContent = '홈페이지 ↗';
+    col.appendChild(link);
+  }
 }
 
-function loading(on, txt = '') {
+// UI
+function loading(on, txt='') {
   $('loader').classList.toggle('on', on);
   if (txt) $('loaderTxt').textContent = txt;
 }
-
 function clearAll() {
   $('errBox').classList.remove('on');
   $('grid').innerHTML = '';
   $('rHeader').classList.remove('on');
-  $('interp').classList.remove('on');
+  $('replyWrap').classList.remove('on');
+  $('replyWrap').style.display = 'none';
 }
-
 function fill(btn) { $('q').value = btn.textContent; go(); }
+function showErr(msg) { $('errBox').textContent = msg; $('errBox').classList.add('on'); }
 
 async function go() {
   const q = $('q').value.trim(); if (!q) return;
   clearAll();
 
-  loading(true, 'Gemini가 맥락을 파악하는 중');
-  let parsed;
+  // 1. Gemini 추천
+  loading(true, 'Gemini가 책을 고르는 중…');
+  let rec;
   try {
-    parsed = await interpret(q);
+    rec = await recommend(q);
   } catch(e) {
     loading(false);
-    $('errBox').textContent = `Gemini 오류\n${e.message}`;
-    $('errBox').classList.add('on'); return;
+    showErr(`Gemini 오류\n${e.message}`); return;
   }
 
-  $('interpTxt').textContent = parsed.description;
-  $('interpTags').innerHTML = (parsed.keywords ?? []).map(k => `<span class="tag">${k}</span>`).join('');
-  $('interp').classList.add('on');
+  // 사서 말풍선
+  $('bubbleTxt').textContent = rec.reply;
+  $('replyWrap').style.display = 'flex';
+  $('replyWrap').classList.add('on');
 
-  loading(true, '책장을 뒤지는 중');
-  let books = [];
-  try {
-    books = await searchBooks(parsed.primaryKeyword, 10);
-    if (books.length < 5 && parsed.keywords?.[0]) {
-      const more = await searchBooks(parsed.keywords[0], 6);
-      const seen = new Set(books.map(b => b.isbn13));
-      for (const b of more) if (!seen.has(b.isbn13)) { books.push(b); seen.add(b.isbn13); }
-    }
-  } catch(e) {
-    loading(false);
-    $('errBox').textContent = `도서 검색 오류\n${e.message}`;
-    $('errBox').classList.add('on'); return;
+  // 2. 각 추천 책 도서관에서 검색
+  loading(true, '도서관에서 책을 찾는 중…');
+  const books = [];
+  const reasons = [];
+
+  for (const recBook of (rec.books ?? [])) {
+    try {
+      const results = await searchBook(recBook.searchKeyword || recBook.title);
+      // 제목이 가장 비슷한 책 선택
+      const best = results.find(b =>
+        b.bookname?.includes(recBook.title.slice(0,4))
+      ) || results[0];
+      if (best) { books.push(best); reasons.push(recBook.reason); }
+    } catch {}
   }
+
   loading(false);
 
   if (!books.length) {
-    $('errBox').textContent = `"${parsed.primaryKeyword}" 검색 결과가 없어요.\n다른 표현으로 시도해보세요.`;
-    $('errBox').classList.add('on'); return;
+    showErr(`추천 도서를 도서관에서 찾지 못했어요.\n다른 표현으로 시도해보세요.`); return;
   }
 
-  $('rTitle').textContent = `"${parsed.primaryKeyword}" 관련 도서`;
+  $('rTitle').textContent = 'Gemini 추천 도서';
   $('rCount').textContent = `${books.length}권`;
   $('rHeader').classList.add('on');
 
   const frag = document.createDocumentFragment();
-  books.forEach((b, i) => frag.appendChild(renderCard(b, i)));
+  books.forEach((b, i) => frag.appendChild(renderCard(b, reasons[i], i)));
   $('grid').appendChild(frag);
+
+  // 3. 대출 현황 (크롤링)
   books.forEach((b, i) => updateAvail(b.isbn13, i));
 }
 
