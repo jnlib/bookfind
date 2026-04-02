@@ -194,29 +194,9 @@ async function initLib() {
 
 // Gemini: 책 직접 추천 + 이유
 async function recommend(query) {
-  const r = await fetch(`${WORKER}/gemini`, {
+  const r = await fetch(`${WORKER}/recommend`, {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ query,
-      prompt_override: `당신은 종로도서관 베테랑 사서입니다. 친근하고 따뜻하게 대화하세요.
-
-사용자 요청에 딱 맞는 책 3권을 직접 골라 추천해주세요.
-
-JSON만 반환 (마크다운 없이):
-{
-  "reply": "사용자에게 건네는 말 2-3문장. 요청을 공감하고 왜 이 책들을 골랐는지 자연스럽게. 따뜻하고 재치있게.",
-  "books": [
-    {"title":"정확한 한국어판 책 제목","author":"저자명","reason":"이 책을 추천하는 이유 1-2문장. 사용자 상황에 맞게 구체적으로.","searchKeyword":"도서관 검색용 키워드 (저자명 또는 제목 핵심어)"}
-  ]
-}
-
-규칙:
-- books는 반드시 3개
-- 실제 도서관에 있을 법한 유명한 책
-- reply는 딱딱하지 않게, 사서가 직접 말하는 것처럼
-- searchKeyword는 도서관 검색에 효과적인 단어 1개
-
-사용자: ${query}`
-    })
+    body: JSON.stringify({ query })
   });
   if (!r.ok) throw new Error((await r.json().catch(()=>({}))).error ?? `오류 ${r.status}`);
   return r.json();
