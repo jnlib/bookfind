@@ -217,7 +217,8 @@ async function interpret(query) {
 
 async function searchBooks(kw, size = 10) {
   const d = await libFetch('srchBooks', { keyword: kw, pageSize: size });
-  let docs = d.response?.docs?.doc ?? [];
+  // docs는 [{doc:{...}}, {doc:{...}}] 형태의 배열
+  let docs = d.response?.docs ?? [];
   if (!Array.isArray(docs)) docs = [docs];
   return docs.map(item => item.doc ?? item);
 }
