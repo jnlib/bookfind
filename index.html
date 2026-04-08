@@ -280,7 +280,11 @@ function renderCard(book, reason, idx) {
     + '<div class="card-author">'+(book.authors||'저자 미상')+'</div>'
     + '<div class="card-meta">'+meta+'</div>'
     + loans + '</div>'
-    + '<div class="card-avail" id="av'+idx+'"><span class="badge b-wait">확인 중</span><div style="font-size:8px;color:var(--txt-d)">'+libName+'</div></div>'
+    + '<div class="card-avail" id="av'+idx+'">'
+    + (book.available === true ? '<span class="badge b-ok">대출 가능</span>' : book.available === false ? '<span class="badge b-no">대출 불가</span>' : '<span class="badge b-wait">확인 중</span>')
+    + '<div style="font-size:8px;color:var(--txt-d)">'+libName+'</div>'
+    + (book.detailUrl ? '<a class="b-link" href="'+book.detailUrl+'" target="_blank">상세보기</a>' : '')
+    + '</div>'
     + '</div>'
     + (reason ? '<div class="card-reason">'+reason+'</div>' : '');
   return div;
@@ -323,42 +327,26 @@ function go() {
   $('main').scrollTop = 0;
 
   recommend(q).then(function(rec) {
+    $('loader').className = 'loading';
+    $('goBtn').disabled = false;
+
     $('replyTxt').textContent = rec.reply;
     $('replyWrap').className = 'reply on';
-    $('loaderTxt').textContent = '도서관에서 책을 찾고 있어요';
 
-    var books = [], reasons = [];
-    var recBooks = rec.books || [];
-    var chain = Promise.resolve();
+    var books = rec.books || [];
+    if (!books.length) {
+      $('errBox').textContent = rec.message || '도서관에서 관련 책을 찾지 못했어요.\n다른 표현으로 시도해보세요.';
+      $('errBox').className = 'err on';
+      return;
+    }
 
-    recBooks.forEach(function(recBook) {
-      chain = chain.then(function() {
-        return searchBook(recBook.searchKeyword || recBook.title).then(function(results) {
-          var best = results.find(function(b){return b.bookname && b.bookname.includes(recBook.title.slice(0,4));}) || results[0];
-          if (best) { books.push(best); reasons.push(recBook.reason); }
-        }).catch(function(){});
-      });
-    });
+    $('rTitle').textContent = 'AI 추천 도서';
+    $('rCount').textContent = books.length + '권';
+    $('rHead').className = 'r-head on';
 
-    return chain.then(function() {
-      $('loader').className = 'loading';
-      $('goBtn').disabled = false;
-
-      if (!books.length) {
-        $('errBox').textContent = '추천 도서를 도서관에서 찾지 못했어요.\n다른 표현으로 시도해보세요.';
-        $('errBox').className = 'err on';
-        return;
-      }
-
-      $('rTitle').textContent = 'AI 추천 도서';
-      $('rCount').textContent = books.length + '권';
-      $('rHead').className = 'r-head on';
-
-      var frag = document.createDocumentFragment();
-      books.forEach(function(b, i) { frag.appendChild(renderCard(b, reasons[i], i)); });
-      $('cards').appendChild(frag);
-      books.forEach(function(b, i) { updateAvail(b.isbn13, i); });
-    });
+    var frag = document.createDocumentFragment();
+    books.forEach(function(b, i) { frag.appendChild(renderCard(b, null, i)); });
+    $('cards').appendChild(frag);
   }).catch(function(e) {
     $('loader').className = 'loading';
     $('goBtn').disabled = false;
