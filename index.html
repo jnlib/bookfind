@@ -281,31 +281,39 @@ function renderCard(book, reason, idx) {
     + '<div class="card-meta">'+meta+'</div>'
     + loans + '</div>'
     + '<div class="card-avail" id="av'+idx+'">'
-    + (book.available === true ? '<span class="badge b-ok">대출 가능</span>' : book.available === false ? '<span class="badge b-no">대출 불가</span>' : '<span class="badge b-wait">확인 중</span>')
+    + '<span class="badge b-wait">확인 중</span>'
     + '<div style="font-size:8px;color:var(--txt-d)">'+libName+'</div>'
-    + (book.detailUrl ? '<a class="b-link" href="'+book.detailUrl+'" target="_blank">상세보기</a>' : '')
     + '</div>'
     + '</div>'
     + (reason ? '<div class="card-reason">'+reason+'</div>' : '');
   return div;
 }
 
-function updateAvail(isbn, idx) {
+function updateLoanStatus(isbn, detailUrl, idx) {
   var col = $('av'+idx); if(!col) return;
   var badge = col.querySelector('.badge');
   realCheck(isbn).then(function(result) {
-    if (!result) { badge.className='badge b-no'; badge.textContent='확인 불가'; return; }
-    if (result.available) { badge.className='badge b-ok'; badge.textContent='대출 가능'; }
-    else { badge.className='badge b-no'; badge.textContent='대출 불가'; }
-    if (result.location) {
+    if (!result) {
+      badge.className='badge b-no'; badge.textContent='확인 불가';
+    } else if (result.totalCount === 0) {
+      badge.className='badge b-no'; badge.textContent='미소장';
+    } else if (result.available) {
+      badge.className='badge b-ok';
+      badge.textContent = result.availCount + '/' + result.totalCount + ' 가능';
+    } else {
+      badge.className='badge b-no'; badge.textContent='전권 대출 중';
+    }
+    if (result && result.location) {
       var loc = document.createElement('div');
       loc.className = 'card-loc';
       loc.textContent = result.location.replace('[종로]','').trim();
       col.appendChild(loc);
     }
-    if (result.detailUrl) {
+    // 상세보기 링크 (realcheck에서 더 정확한 URL 있으면 사용)
+    var url = (result && result.detailUrl) ? result.detailUrl : detailUrl;
+    if (url) {
       var link = document.createElement('a');
-      link.className = 'b-link'; link.href = result.detailUrl; link.target = '_blank';
+      link.className = 'b-link'; link.href = url; link.target = '_blank';
       link.textContent = '상세보기';
       col.appendChild(link);
     }
@@ -347,6 +355,9 @@ function go() {
     var frag = document.createDocumentFragment();
     books.forEach(function(b, i) { frag.appendChild(renderCard(b, null, i)); });
     $('cards').appendChild(frag);
+
+    // 대출 상태를 실시간으로 가져와서 업데이트
+    books.forEach(function(b, i) { updateLoanStatus(b.isbn13, b.detailUrl, i); });
   }).catch(function(e) {
     $('loader').className = 'loading';
     $('goBtn').disabled = false;

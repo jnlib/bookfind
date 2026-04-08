@@ -99,33 +99,18 @@ JSON만 반환 (마크다운 없이):
         });
         preSorted.sort((a, b) => b.ps - a.ps);
 
-        // 상위 후보를 순차적으로 종로도서관 홈페이지에서 직접 확인
-        // 홈페이지에서 실제 검색되는 책만 결과에 포함 (5권 모이면 중단)
-        for (const item of preSorted.slice(0, 20)) {
-          if (allBooks.length >= 5) break;
+        // bookExist API로 종로도서관 소장 확인 (빠르고 안정적)
+        // 대출 상태/상세 링크는 프론트에서 /realcheck로 따로 확인
+        const top = preSorted.slice(0, 15);
+        const existResults = await Promise.all(top.map(item => {
           const isbn = item.book.isbn13 || item.book.isbn;
-          try {
-            const searchUrl = `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&editMode=normal&mainSearchType=on&search_text=${isbn}`;
-            const resp = await fetch(searchUrl, {
-              headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0',
-                'Accept': 'text/html,application/xhtml+xml',
-                'Accept-Language': 'ko-KR,ko;q=0.9',
-              }
-            });
-            const html = await resp.text();
-            // vCtrl이 있으면 = 종로도서관에 실제 소장
-            const vCtrlMatch = html.match(/vCtrl="(\d+)"/);
-            if (!vCtrlMatch) continue; // 없으면 스킵
-
-            const vCtrl = vCtrlMatch[1];
-            const available = html.includes('도서대출가능') || (html.includes('대출가능') && !html.includes('대출불가'));
-            const locationMatch = html.match(/자료실\s*:\s*([^<]+)<\/span>/);
-            item.book._vCtrl = vCtrl;
-            item.book._available = available;
-            item.book._location = locationMatch ? locationMatch[1].trim() : null;
-            allBooks.push(item.book);
-          } catch(e) { /* skip */ }
+          return fetch(`${LIB_BASE}/bookExist?authKey=${LIB_KEY}&format=json&isbn13=${isbn}&libCode=${LIB_CODE}`)
+            .then(r => r.json())
+            .then(d => ({ book: item.book, exists: d.response?.result?.hasBook === 'Y' }))
+            .catch(() => ({ book: item.book, exists: false }));
+        }));
+        for (const item of existResults) {
+          if (item.exists && allBooks.length < 5) allBooks.push(item.book);
         }
 
         if (allBooks.length === 0) {
@@ -168,10 +153,10 @@ JSON만 반환 (마크다운 없이):
 
         // 점수 높은 순 정렬 → 상위 5권
         scored.sort((a, b) => b.score - a.score);
-        const top = scored.slice(0, 5);
+        const topScored = scored.slice(0, 5);
 
         // 결과 포맷
-        const bookResults = top.map(function(item) {
+        const bookResults = topScored.map(function(item) {
           const isbn = item.book.isbn13 || item.book.isbn;
           const vCtrl = item.book._vCtrl;
           const detailUrl = vCtrl
@@ -185,8 +170,6 @@ JSON만 반환 (마크다운 없이):
             isbn13: isbn,
             bookImageURL: item.book.bookImageURL,
             loan_count: item.book.loan_count,
-            available: item.book._available,
-            location: item.book._location,
             detailUrl: detailUrl,
             score: item.score
           };
@@ -230,14 +213,19 @@ JSON만 반환 (마크다운 없이):
         const html = await r.text();
         const vCtrlMatch = html.match(/vCtrl="(\d+)"/);
         const vCtrl = vCtrlMatch ? vCtrlMatch[1] : null;
-        const available = html.includes('도서대출가능') ||
-                          (html.includes('대출가능') && !html.includes('대출불가'));
-        const locationMatch = html.match(/자료실\s*:\s*([^<]+)<\/span>/);
+
+        // 자료상태 필드에서 실제 대출 상태 파싱 (html.includes 대신 정확한 매칭)
+        const statusMatches = [...html.matchAll(/자료상태\s*:[\s\S]*?(대출가능|대출중|대출불가)/g)];
+        const availCount = statusMatches.filter(m => m[1] === '대출가능').length;
+        const totalCount = statusMatches.length;
+        const available = availCount > 0;
+
+        const locationMatch = html.match(/자료실\s*:\s*([^<]+)/);
         const location = locationMatch ? locationMatch[1].trim() : null;
         const detailUrl = vCtrl
           ? `${JN_BASE}/jnlib/intro/search/detail.do?vLoca=111021&vCtrl=${vCtrl}&isbn=${isbn}&menu_idx=4`
           : `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`;
-        return json({ available, location, vCtrl, detailUrl });
+        return json({ available, availCount, totalCount, location, vCtrl, detailUrl });
       } catch(e) { return jsonErr(e.message, 500); }
     }
 
