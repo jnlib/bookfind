@@ -21,19 +21,23 @@ export default {
         const { query } = await request.json();
 
         // ① Gemini 1회: 검색 키워드 + 사서 멘트
-        const prompt = `사용자의 고민/상황에 맞는 도서관 검색 키워드를 만들어줘.
+        const prompt = `사용자의 고민에 맞는 책을 도서관에서 검색하기 위한 키워드를 만들어줘.
 
 JSON만 반환 (마크다운 없이):
 {
   "keywords": ["키워드1","키워드2","키워드3","키워드4","키워드5"],
-  "reply": "사서가 건네는 따뜻한 말 2-3문장. 사용자 고민에 공감하고, 책을 찾아보겠다는 내용.",
-  "criteria": "어떤 종류의 책이 좋을지 한 줄 설명 (예: 위로와 공감을 주는 에세이)"
+  "reply": "사서가 건네는 따뜻한 말 2-3문장"
 }
 
-규칙:
-- keywords는 5개, 다양한 각도로 (감정, 주제, 장르, 저자, 관련어)
-- 너무 일반적인 단어(책, 도서관, 추천) 쓰지 마
-- 한국어 도서 검색에 효과적인 단어로
+키워드 규칙 (매우 중요):
+- 도서관 도서 검색 시스템에 입력할 1~2단어짜리 검색어
+- 문장 금지! 반드시 명사 1~2개로 구성 (예: 위로, 에세이, 철학, 심리학, 공허)
+- 관련 유명 작가명 1~2개 포함 (예: 한강, 김수현, 알랭 드 보통)
+- 관련 장르/주제어 포함 (예: 에세이, 소설, 심리, 자존감, 힐링)
+- 절대 "~할 때", "~에 대한" 같은 서술형 쓰지 마
+
+좋은 예: ["공허","위로","에세이","한강","자존감"]
+나쁜 예: ["마음이 힘들 때","슬픔 극복하는 방법","정서적 안정을 위한"]
 
 사용자: ${query}`;
 
@@ -83,25 +87,39 @@ JSON만 반환 (마크다운 없이):
           }
         }
 
-        // 정보나루 bookExist API로 종로도서관 소장 확인 (병렬, 안정적)
-        const existPromises = candidates.map(function(b) {
-          const isbn = b.isbn13 || b.isbn;
-          const qs = new URLSearchParams({ authKey: LIB_KEY, format: 'json', isbn13: isbn, libCode: LIB_CODE });
-          return fetch(`${LIB_BASE}/bookExist?${qs}`)
-            .then(r => r.json())
-            .then(d => {
-              const hasBook = d.response?.result?.hasBook === 'Y';
-              const loanAvailable = d.response?.result?.loanAvailable === 'Y';
-              return { book: b, exists: hasBook, available: loanAvailable };
-            })
-            .catch(() => ({ book: b, exists: false, available: false }));
+        // 점수 기반 사전 정렬 → 상위 20권만 소장 확인
+        const preSorted = candidates.map(function(b) {
+          let s = 0;
+          const t = (b.bookname || '').toLowerCase();
+          const a = (b.authors || '').toLowerCase();
+          keywords.forEach(kw => { if (t.includes(kw.toLowerCase())) s += 15; if (a.includes(kw.toLowerCase())) s += 8; });
+          if (parseInt(b.loan_count) > 50) s += 5;
+          return { book: b, ps: s };
         });
+        preSorted.sort((a, b) => b.ps - a.ps);
+        const topCandidates = preSorted.slice(0, 20);
 
-        const checked = await Promise.all(existPromises);
-        for (const item of checked) {
-          if (item.exists) {
-            item.book._available = item.available;
-            allBooks.push(item.book);
+        // 정보나루 bookExist API로 소장 확인 (5건씩 배치)
+        for (let i = 0; i < topCandidates.length; i += 5) {
+          if (allBooks.length >= 5) break;
+          const batch = topCandidates.slice(i, i + 5);
+          const batchResults = await Promise.all(batch.map(function(item) {
+            const isbn = item.book.isbn13 || item.book.isbn;
+            const qs = new URLSearchParams({ authKey: LIB_KEY, format: 'json', isbn13: isbn, libCode: LIB_CODE });
+            return fetch(`${LIB_BASE}/bookExist?${qs}`)
+              .then(r => r.json())
+              .then(d => ({
+                book: item.book,
+                exists: d.response?.result?.hasBook === 'Y',
+                available: d.response?.result?.loanAvailable === 'Y'
+              }))
+              .catch(() => ({ book: item.book, exists: false, available: false }));
+          }));
+          for (const item of batchResults) {
+            if (item.exists && allBooks.length < 5) {
+              item.book._available = item.available;
+              allBooks.push(item.book);
+            }
           }
         }
 
