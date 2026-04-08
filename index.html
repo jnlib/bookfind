@@ -4,185 +4,152 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>서재 — 고민을 말하면 책을 찾아드려요</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f6f4f0;--bg2:#edeae4;
-  --surface:#ffffff;--surface2:#f9f7f4;
-  --accent:#3a2a6e;--accent-l:#5c4a9e;--accent-bg:rgba(58,42,110,.06);
-  --warm:#8b6914;--warm-bg:#faf5e8;
-  --txt:#1e1e1e;--txt-m:#6b6560;--txt-d:#a09890;
-  --border:#e0dbd4;--border-l:#ece8e2;
-  --green:#2d7a4f;--green-bg:#e8f5ee;
-  --red:#8b3a3a;--red-bg:#f5eaea;
-  --radius:14px;
-  --shadow:0 1px 4px rgba(0,0,0,.04),0 4px 20px rgba(0,0,0,.03);
-  --shadow-h:0 2px 8px rgba(0,0,0,.06),0 8px 32px rgba(0,0,0,.05);
+  --navy:#07213a;--teal:#00cfc0;--teal2:#00a898;--blue:#3182ff;
+  --bg:linear-gradient(160deg,#eef3ff,#e8f6f4);
+  --surface:#fff;--surface2:#f4f7fb;
+  --txt:#1a2a3a;--txt-m:#5a7088;--txt-l:#94a8bb;
+  --border:rgba(0,207,192,.15);
+  --green:#0d9e6e;--green-bg:#e2f7ef;
+  --red:#d44;--red-bg:#fdeaea;
+  --shadow:0 3px 16px rgba(7,33,58,.07);
+  --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;touch-action:manipulation}
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
+body{font-family:'Noto Sans KR',sans-serif;background:#eef3ff;background:var(--bg);color:var(--txt)}
 
-.app{width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.shell{width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden}
 
 /* ── 헤더 ── */
-.hdr{flex-shrink:0;padding:32px 28px 0;text-align:center}
-.hdr-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:22px}
-.hdr-logo img{height:28px;object-fit:contain}
-.hdr-logo .sep{width:1px;height:18px;background:var(--border)}
-.hdr-logo .label{font-size:13px;font-weight:500;color:var(--accent);letter-spacing:.05em}
-.hdr h1{font-family:'Noto Serif KR',serif;font-size:clamp(24px,5vw,30px);font-weight:700;line-height:1.5;letter-spacing:-.01em;color:var(--txt)}
-.hdr h1 .hl{color:var(--accent)}
-.hdr-sub{font-size:13px;font-weight:300;color:var(--txt-m);line-height:1.6;margin-top:8px}
-.status{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-size:11px;color:var(--txt-d)}
-.status-dot{width:5px;height:5px;border-radius:50%;background:var(--txt-d)}
-.status-dot.ok{background:var(--green);box-shadow:0 0 6px rgba(45,122,79,.4)}
+.hdr{flex-shrink:0;background:var(--navy);padding:18px 24px;display:flex;align-items:center;gap:14px}
+.hdr-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-av img{width:28px;height:28px;object-fit:contain;filter:brightness(10)}
+.hdr-info{flex:1}
+.hdr-name{font-size:17px;font-weight:700;color:#fff}
+.hdr-status{font-size:13px;color:var(--teal);display:flex;align-items:center;gap:5px;margin-top:2px}
+.hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+.hdr-new{background:none;border:1.5px solid rgba(255,255,255,.25);color:#fff;font-size:13px;padding:7px 16px;border-radius:20px;cursor:pointer;font-family:inherit;transition:.2s}
+.hdr-new:hover{background:rgba(255,255,255,.1)}
 
-/* ── 메인 콘텐츠 ── */
-.main{flex:1;overflow-y:auto;padding:20px 28px;scroll-behavior:smooth}
-.main::-webkit-scrollbar{width:2px}
-.main::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* ── 채팅 영역 ── */
+.chat{flex:1;overflow-y:auto;padding:20px 18px;scroll-behavior:smooth}
+.chat::-webkit-scrollbar{width:3px}
+.chat::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
 
-/* ── 홈 예시 ── */
-.home-label{font-size:11px;font-weight:500;color:var(--txt-d);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;padding-left:2px}
-.home{display:flex;flex-direction:column;gap:8px}
-.ex{background:var(--surface);border:1px solid var(--border-l);border-radius:var(--radius);padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px}
-.ex:hover{border-color:var(--accent);box-shadow:var(--shadow-h)}
-.ex:active{transform:scale(.98)}
-.ex-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;font-weight:700;color:var(--accent)}
-.ex-body{flex:1;min-width:0}
-.ex-txt{font-size:14px;font-weight:500;color:var(--txt);line-height:1.5}
-.ex-sub{font-size:11px;color:var(--txt-d);margin-top:2px}
+/* ── 메시지 행 ── */
+.brow{display:flex;gap:10px;margin-bottom:14px;animation:popIn .35s cubic-bezier(.175,.885,.32,1.275)}
+.brow.ai{align-items:flex-start}
+.brow.usr{justify-content:flex-end}
 
-/* ── 검색바 ── */
-.search{flex-shrink:0;padding:14px 28px 28px;background:linear-gradient(transparent,var(--bg) 30%)}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:5px 5px 5px 18px;box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
-.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(58,42,110,.08)}
-.search-box input{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:400;color:var(--txt);padding:11px 0;caret-color:var(--accent)}
-.search-box input::placeholder{color:var(--txt-d);font-weight:300}
-.search-btn{width:44px;height:44px;border:none;border-radius:9px;background:var(--accent);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-weight:300}
-.search-btn:hover{background:var(--accent-l)}
-.search-btn:active{transform:scale(.92)}
-.search-btn:disabled{opacity:.3;cursor:not-allowed}
+.av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.av img{width:24px;height:24px;filter:brightness(10)}
 
-/* ── 로딩 ── */
-.loading{display:none;text-align:center;padding:60px 20px}
-.loading.on{display:block}
-.loading-book{font-size:14px;color:var(--accent);margin-bottom:16px;letter-spacing:.1em;font-weight:500}
-.loading-bar{width:120px;height:2px;background:var(--border);margin:0 auto 14px;border-radius:1px;overflow:hidden}
-.loading-bar::after{content:'';display:block;width:40%;height:100%;background:var(--accent);border-radius:1px;animation:slide 1.2s ease-in-out infinite}
-@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
-.loading-txt{font-size:14px;color:var(--txt-m);font-weight:300}
+/* ── 버블 ── */
+.bbl{max-width:82%;padding:14px 18px;line-height:1.85;font-size:16px;word-break:keep-all}
+.bbl.ai{background:var(--surface);border:1px solid var(--border);border-radius:5px 18px 18px 18px;box-shadow:var(--shadow);color:var(--txt)}
+.bbl.usr{background:linear-gradient(135deg,var(--teal2),var(--blue));border-radius:18px 18px 5px 18px;color:#fff;font-weight:500}
+.bbl-name{font-size:12px;font-weight:700;color:var(--teal2);margin-bottom:6px;letter-spacing:.05em}
 
-/* ── AI 사서 말풍선 ── */
-.reply{display:none;margin-bottom:18px;animation:fadeUp .4s ease}
-.reply.on{display:flex;gap:12px;align-items:flex-start}
-.reply-av{width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
-.reply-av img{width:24px;height:24px;object-fit:contain;filter:brightness(10)}
-.reply-bub{background:var(--surface);border:1px solid var(--border-l);border-radius:4px 14px 14px 14px;padding:14px 16px;flex:1;box-shadow:var(--shadow)}
-.reply-name{font-size:10px;font-weight:500;letter-spacing:.12em;color:var(--accent);margin-bottom:5px}
-.reply-txt{font-size:13px;line-height:1.85;color:var(--txt-m);font-weight:300}
+/* ── 타이핑 커서 ── */
+.cursor{display:inline-block;width:2px;height:1em;background:var(--teal);margin-left:2px;animation:blink 1s infinite;vertical-align:text-bottom}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
 
-/* ── 결과 헤더 ── */
-.r-head{display:none;align-items:center;justify-content:space-between;margin-bottom:12px}
-.r-head.on{display:flex}
-.r-title{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--txt)}
-.r-count{font-size:11px;color:var(--txt-d);background:var(--surface2);padding:3px 10px;border-radius:20px;margin-left:8px}
-.r-back{font-size:12px;color:var(--accent);cursor:pointer;padding:6px 14px;border:1px solid var(--border);border-radius:20px;background:var(--surface);font-family:'Noto Sans KR',sans-serif;transition:.15s}
-.r-back:hover{background:var(--accent-bg)}
+/* ── 로딩 행 ── */
+.lrow{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;animation:popIn .35s}
+.lbbl{background:var(--surface);border:1px solid var(--border);border-radius:5px 18px 18px 18px;padding:18px 22px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.lring{width:42px;height:42px;position:relative;flex-shrink:0}
+.lring-c{width:100%;height:100%;border:3px solid rgba(0,207,192,.15);border-top-color:var(--teal);border-radius:50%;animation:spin 1.2s linear infinite}
+.lring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;filter:brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(500%) hue-rotate(140deg);animation:bounce 1s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bounce{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-55%) scale(1.1)}}
+.ltxt{font-size:15px;color:var(--txt-m);font-weight:400}
+.ldots{display:inline-flex;gap:4px;margin-left:4px}
+.ldots span{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:dotPulse 1.2s infinite}
+.ldots span:nth-child(2){animation-delay:.2s}
+.ldots span:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,60%,100%{opacity:.2;transform:scale(.8)}30%{opacity:1;transform:scale(1.2)}}
 
-/* ── 책 카드 ── */
-.cards{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--surface);border:1px solid var(--border-l);border-radius:var(--radius);overflow:hidden;opacity:0;transform:translateY(8px);animation:fadeUp .4s forwards;box-shadow:var(--shadow);transition:border-color .2s}
-.card:hover{border-color:var(--border)}
-.card-top{display:flex}
-.card-img{width:76px;min-height:110px;background:var(--surface2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.card-img img{width:100%;height:100%;object-fit:cover}
-.card-img .ph{font-size:13px;color:var(--txt-d);font-weight:300}
-.card-body{flex:1;padding:13px 15px;min-width:0}
-.card-title{font-size:14px;font-weight:700;line-height:1.5;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card-author{font-size:11px;color:var(--txt-m);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-meta{font-size:10px;color:var(--txt-d)}
-.card-loans{font-size:10px;color:var(--txt-d);margin-top:3px}
-.card-avail{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;border-left:1px solid var(--border-l);min-width:76px;gap:3px;background:var(--surface2)}
-.badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:4px;white-space:nowrap}
+/* ── 예시 칩 ── */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;animation:popIn .4s}
+.chip{background:rgba(0,207,192,.08);border:1.5px solid rgba(0,207,192,.2);color:var(--navy);font-size:15px;font-weight:500;padding:12px 18px;border-radius:24px;cursor:pointer;transition:.2s;font-family:inherit;line-height:1.4}
+.chip:hover{background:rgba(0,207,192,.18);border-color:var(--teal)}
+.chip:active{transform:scale(.96)}
+
+/* ── 책 카드 (채팅 내) ── */
+.book-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:8px;opacity:0;transform:translateY(10px);animation:fadeUp .4s forwards}
+.book-top{display:flex}
+.book-img{width:80px;min-height:115px;background:var(--surface2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.book-img img{width:100%;height:100%;object-fit:cover}
+.book-img .ph{font-size:22px;color:var(--txt-l);font-weight:700}
+.book-body{flex:1;padding:14px 16px;min-width:0}
+.book-title{font-size:17px;font-weight:700;line-height:1.5;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.book-author{font-size:14px;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.book-meta{font-size:12px;color:var(--txt-l)}
+.book-avail{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;border-left:1px solid rgba(0,207,192,.1);min-width:82px;gap:4px;background:var(--surface2)}
+.badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap}
 .b-ok{background:var(--green-bg);color:var(--green)}
 .b-no{background:var(--red-bg);color:var(--red)}
-.b-wait{background:var(--bg2);color:var(--txt-d);animation:pulse 1.3s infinite}
+.b-wait{background:#f0f2f5;color:var(--txt-l);animation:pulse 1.3s infinite}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-.b-link{font-size:9px;color:var(--accent);text-decoration:none;margin-top:2px;padding:2px 6px;border-radius:3px;background:var(--surface)}
-.b-link:hover{background:var(--accent-bg)}
-.card-loc{font-size:8px;color:var(--txt-d);text-align:center;margin-top:2px;max-width:68px;word-break:keep-all}
-.card-reason{border-top:1px solid var(--border-l);padding:10px 15px;font-size:12px;line-height:1.75;color:var(--txt-m);font-weight:300;font-style:italic;background:var(--surface2)}
+.b-link{font-size:12px;color:var(--blue);text-decoration:none;padding:4px 10px;border-radius:6px;background:rgba(49,130,255,.06);font-weight:500;transition:.15s}
+.b-link:hover{background:rgba(49,130,255,.15)}
+.book-loc{font-size:11px;color:var(--txt-l);text-align:center;margin-top:2px}
+.book-comment{border-top:1px solid rgba(0,207,192,.1);padding:12px 16px;font-size:15px;line-height:1.8;color:var(--txt-m);background:linear-gradient(135deg,rgba(0,207,192,.03),rgba(49,130,255,.03))}
 
-/* ── 에러 ── */
-.err{display:none;background:var(--red-bg);border:1px solid #e8d0d0;border-radius:10px;padding:14px 16px;margin-bottom:14px;font-size:12px;color:var(--red);line-height:1.7;white-space:pre-line}
-.err.on{display:block}
+/* ── 입력 영역 ── */
+.iarea{flex-shrink:0;padding:12px 18px 24px;background:rgba(238,243,255,.9);backdrop-filter:blur(10px)}
+.ibox-wrap{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid rgba(0,207,192,.2);border-radius:16px;padding:6px 6px 6px 20px;box-shadow:var(--shadow);transition:.2s}
+.ibox-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,207,192,.1)}
+.ibox{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:17px;color:var(--txt);padding:12px 0;resize:none;min-height:24px;max-height:100px;line-height:1.5}
+.ibox::placeholder{color:var(--txt-l);font-weight:300}
+.sbtn{width:50px;height:50px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;box-shadow:0 4px 12px rgba(0,207,192,.3)}
+.sbtn:hover{transform:scale(1.05)}
+.sbtn:active{transform:scale(.92)}
+.sbtn:disabled{opacity:.3;cursor:not-allowed;transform:none}
 
+/* ── 애니메이션 ── */
+@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:480px){
-  .hdr{padding:24px 20px 0}
-  .main{padding:16px 20px}
-  .search{padding:12px 20px 22px}
+  .chat{padding:16px 14px}
+  .iarea{padding:10px 14px 20px}
 }
 </style>
 </head>
 <body>
-<div class="app">
+<div class="shell">
 
   <div class="hdr">
-    <div class="hdr-logo">
-      <img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt="종로도서관">
-      <div class="sep"></div>
-      <span class="label">서재</span>
+    <div class="hdr-av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>
+    <div class="hdr-info">
+      <div class="hdr-name">AI 사서 — 서재</div>
+      <div class="hdr-status"><span class="hdr-dot" id="sDot"></span><span id="sLib">연결 중…</span></div>
     </div>
-    <h1>고민을 말하면<br><span class="hl">책을 찾아드려요</span></h1>
-    <p class="hdr-sub">지금 느끼는 감정, 겪고 있는 상황을 편하게 말씀해주세요</p>
-    <div class="status">
-      <span class="status-dot" id="sDot"></span>
-      <span id="sLib">연결 중…</span>
-    </div>
+    <button class="hdr-new" onclick="goHome()">새 대화</button>
   </div>
 
-  <div class="main" id="main">
-    <div id="homeArea">
-      <div class="home-label">이런 고민이 있으신가요</div>
-      <div class="home" id="homeCards"></div>
-    </div>
-
-    <div class="loading" id="loader">
-      <div class="loading-book">서재</div>
-      <div class="loading-bar"></div>
-      <div class="loading-txt" id="loaderTxt">AI 사서가 책을 고르고 있어요</div>
-    </div>
-
-    <div class="err" id="errBox"></div>
-
-    <div class="reply" id="replyWrap">
-      <div class="reply-av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>
-      <div class="reply-bub">
-        <div class="reply-name">AI 사서</div>
-        <div class="reply-txt" id="replyTxt"></div>
+  <div class="chat" id="chat">
+    <!-- 인사 메시지 -->
+    <div class="brow ai" id="greeting">
+      <div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>
+      <div class="bbl ai">
+        <div class="bbl-name">AI 사서</div>
+        안녕하세요! 종로도서관 AI 사서예요.<br>
+        지금 어떤 고민이 있으신가요?<br>
+        아래에서 골라보시거나, 직접 말씀해주세요.
       </div>
     </div>
-
-    <div class="r-head" id="rHead">
-      <div style="display:flex;align-items:center">
-        <span class="r-title" id="rTitle">추천 도서</span>
-        <span class="r-count" id="rCount"></span>
-      </div>
-      <button class="r-back" onclick="goHome()">다시 찾기</button>
-    </div>
-    <div class="cards" id="cards"></div>
+    <div class="chips" id="chips"></div>
   </div>
 
-  <div class="search">
-    <div class="search-box">
-      <input id="q" type="text" autocomplete="off" spellcheck="false"
-        placeholder="고민이나 상황을 편하게 말해주세요"
-        onkeydown="if(event.key==='Enter')go()">
-      <button class="search-btn" id="goBtn" onclick="go()">&#10140;</button>
+  <div class="iarea">
+    <div class="ibox-wrap">
+      <textarea id="q" class="ibox" rows="1" placeholder="고민이나 상황을 편하게 말해주세요" onkeydown="handleKey(event)"></textarea>
+      <button class="sbtn" id="goBtn" onclick="go()">&#10140;</button>
     </div>
   </div>
 
@@ -190,109 +157,196 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt)
 
 <script>
 var WORKER = 'https://seojae.hdh1231.workers.dev';
-var libCode = '111021', libName = '종로도서관';
+var libName = '종로도서관';
+var isLoading = false;
 
 var EXAMPLES = [
-  {icon:'01', txt:'요즘 마음이 공허하고 허무해요', sub:'존재와 의미에 대한 책'},
-  {icon:'02', txt:'직장에서 번아웃이 온 것 같아요', sub:'쉼과 회복에 관한 책'},
-  {icon:'03', txt:'중요한 결정을 앞두고 있어요', sub:'선택과 결단의 지혜'},
-  {icon:'04', txt:'이별 후에 마음을 추스르고 싶어요', sub:'위로와 치유의 이야기'},
-  {icon:'05', txt:'새로운 시작이 두렵고 자신이 없어요', sub:'용기와 도전에 관한 책'},
-  {icon:'06', txt:'세상이 불공평하다고 느껴져요', sub:'사회와 정의에 대한 시선'},
-  {icon:'07', txt:'아이에게 읽어줄 좋은 책이 필요해요', sub:'따뜻한 그림책 추천'},
-  {icon:'08', txt:'잠이 안 올 때 읽을 잔잔한 책', sub:'밤에 어울리는 에세이'},
+  '요즘 마음이 공허하고 허무해요',
+  '직장에서 번아웃이 온 것 같아요',
+  '중요한 결정을 앞두고 있어요',
+  '이별 후에 마음을 추스르고 싶어요',
+  '새로운 시작이 두렵고 자신이 없어요',
+  '잠이 안 올 때 읽을 잔잔한 책',
+];
+
+var LOADING_MSGS = [
+  '고민을 분석하고 있어요',
+  '관련 책을 검색 중이에요',
+  '종로도서관 소장 여부를 확인해요',
+  '추천 멘트를 작성하고 있어요',
+  '거의 다 됐어요!',
 ];
 
 var $ = function(id) { return document.getElementById(id); };
 
-function renderExamples() {
+/* ── 초기화 ── */
+function init() {
+  // 예시 칩 렌더
   var html = '';
-  EXAMPLES.forEach(function(ex) {
-    html += '<div class="ex" onclick="fillAndGo(\'' + ex.txt.replace(/'/g,"\\'") + '\')">'
-      + '<div class="ex-icon">' + ex.icon + '</div>'
-      + '<div class="ex-body"><div class="ex-txt">' + ex.txt + '</div>'
-      + '<div class="ex-sub">' + ex.sub + '</div></div></div>';
+  EXAMPLES.forEach(function(txt) {
+    html += '<button class="chip" onclick="fillAndGo(\'' + txt.replace(/'/g,"\\'") + '\')">' + txt + '</button>';
   });
-  $('homeCards').innerHTML = html;
+  $('chips').innerHTML = html;
+
+  // 상태 확인
+  fetch(WORKER + '/libcode').then(function(r){return r.json();}).then(function(d) {
+    libName = d.libName;
+    $('sDot').style.background = 'var(--teal)';
+    $('sLib').textContent = libName + ' 연결됨';
+  }).catch(function() {
+    $('sLib').textContent = '연결 오류';
+  });
+
+  // 텍스트영역 자동 높이
+  $('q').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+  });
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); }
 }
 
 function fillAndGo(txt) { $('q').value = txt; go(); }
 
+/* ── 새 대화 ── */
 function goHome() {
-  $('homeArea').style.display = 'block';
-  $('replyWrap').className = 'reply';
-  $('rHead').className = 'r-head';
-  $('cards').innerHTML = '';
-  $('errBox').className = 'err';
+  if (isLoading) return;
+  $('chat').innerHTML = '';
+  // 인사 다시
+  addAiBubble('안녕하세요! 종로도서관 AI 사서예요.\n지금 어떤 고민이 있으신가요?\n아래에서 골라보시거나, 직접 말씀해주세요.');
+  // 칩 다시
+  var chipDiv = document.createElement('div');
+  chipDiv.className = 'chips';
+  var html = '';
+  EXAMPLES.forEach(function(txt) {
+    html += '<button class="chip" onclick="fillAndGo(\'' + txt.replace(/'/g,"\\'") + '\')">' + txt + '</button>';
+  });
+  chipDiv.innerHTML = html;
+  $('chat').appendChild(chipDiv);
   $('q').value = '';
-  $('main').scrollTop = 0;
+  scrollBottom();
 }
 
-function initLib() {
-  fetch(WORKER + '/libcode').then(function(r){return r.json();}).then(function(d) {
-    libCode = d.libCode; libName = d.libName;
-    $('sDot').className = 'status-dot ok';
-    $('sLib').textContent = libName + ' 연결됨';
-  }).catch(function() {
-    $('sDot').className = 'status-dot';
-    $('sLib').textContent = libName + ' 오류';
+/* ── 채팅 요소 추가 ── */
+function addUserBubble(text) {
+  var row = document.createElement('div');
+  row.className = 'brow usr';
+  row.innerHTML = '<div class="bbl usr">' + escHtml(text) + '</div>';
+  $('chat').appendChild(row);
+  scrollBottom();
+}
+
+function addAiBubble(text, skipTyping) {
+  var row = document.createElement('div');
+  row.className = 'brow ai';
+  var bbl = document.createElement('div');
+  bbl.className = 'bbl ai';
+  bbl.innerHTML = '<div class="bbl-name">AI 사서</div>';
+  var content = document.createElement('span');
+  bbl.appendChild(content);
+  row.innerHTML = '<div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>';
+  row.appendChild(bbl);
+  $('chat').appendChild(row);
+
+  if (skipTyping) {
+    content.innerHTML = text.replace(/\n/g, '<br>');
+    scrollBottom();
+    return Promise.resolve();
+  }
+
+  // 타이핑 효과
+  return new Promise(function(resolve) {
+    var cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    bbl.appendChild(cursor);
+    var chars = text.split('');
+    var i = 0;
+    var timer = setInterval(function() {
+      if (i < chars.length) {
+        if (chars[i] === '\n') {
+          content.appendChild(document.createElement('br'));
+        } else {
+          content.appendChild(document.createTextNode(chars[i]));
+        }
+        i++;
+        scrollBottom();
+      } else {
+        clearInterval(timer);
+        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+        resolve();
+      }
+    }, 22);
   });
 }
 
-function recommend(query) {
-  return fetch(WORKER + '/recommend', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ query: query })
-  }).then(function(r) {
-    if (!r.ok) return r.json().then(function(d){throw new Error(d.error||'오류');});
-    return r.json();
-  });
+function addLoading() {
+  var row = document.createElement('div');
+  row.className = 'lrow';
+  row.id = 'loadRow';
+  row.innerHTML = '<div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>'
+    + '<div class="lbbl">'
+    + '<div class="lring"><div class="lring-c"></div><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>'
+    + '<div><div class="ltxt" id="loadTxt">' + LOADING_MSGS[0] + '<span class="ldots"><span></span><span></span><span></span></span></div></div>'
+    + '</div>';
+  $('chat').appendChild(row);
+  scrollBottom();
+
+  // 메시지 순환
+  var msgIdx = 0;
+  var loadTimer = setInterval(function() {
+    msgIdx = (msgIdx + 1) % LOADING_MSGS.length;
+    var el = $('loadTxt');
+    if (el) el.innerHTML = LOADING_MSGS[msgIdx] + '<span class="ldots"><span></span><span></span><span></span></span>';
+  }, 2500);
+  return loadTimer;
 }
 
-function searchBook(keyword) {
-  var qs = new URLSearchParams({_endpoint:'srchBooks', keyword:keyword, pageSize:'5'});
-  return fetch(WORKER + '/library?' + qs).then(function(r){return r.json();}).then(function(d) {
-    var docs = d.response && d.response.docs ? d.response.docs : [];
-    if (!Array.isArray(docs)) docs = [docs];
-    return docs.map(function(i){return i.doc||i;}).filter(function(b){return b.bookname;});
-  });
+function removeLoading(timer) {
+  clearInterval(timer);
+  var el = $('loadRow');
+  if (el) el.parentNode.removeChild(el);
 }
 
-function realCheck(isbn) {
-  if (!isbn) return Promise.resolve(null);
-  return fetch(WORKER + '/realcheck?isbn=' + isbn).then(function(r){return r.json();}).catch(function(){return null;});
-}
+function addBookCard(book, idx) {
+  var row = document.createElement('div');
+  row.className = 'brow ai';
+  row.style.paddingLeft = '50px';
 
-function renderCard(book, reason, idx) {
-  var div = document.createElement('div');
-  div.className = 'card';
-  div.style.animationDelay = (idx * 90) + 'ms';
+  var card = document.createElement('div');
+  card.className = 'book-card';
+  card.style.animationDelay = (idx * 120) + 'ms';
+
   var hasImg = !!book.bookImageURL;
   var meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
-  var loans = book.loan_count ? '<div class="card-loans">대출 ' + Number(book.loan_count).toLocaleString() + '회</div>' : '';
 
-  div.innerHTML = '<div class="card-top">'
-    + '<div class="card-img">'
+  card.innerHTML = '<div class="book-top">'
+    + '<div class="book-img">'
     + (hasImg ? '<img src="'+book.bookImageURL+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : '')
-    + '<div class="ph" style="'+(hasImg?'display:none':'')+'">' + (book.bookname ? book.bookname.slice(0,1) : '?') + '</div></div>'
-    + '<div class="card-body">'
-    + '<div class="card-title">'+(book.bookname||'제목 없음')+'</div>'
-    + '<div class="card-author">'+(book.authors||'저자 미상')+'</div>'
-    + '<div class="card-meta">'+meta+'</div>'
-    + loans + '</div>'
-    + '<div class="card-avail" id="av'+idx+'">'
+    + '<div class="ph" style="'+(hasImg?'display:none':'display:flex')+'">' + (book.bookname ? book.bookname.slice(0,1) : '?') + '</div></div>'
+    + '<div class="book-body">'
+    + '<div class="book-title">'+(book.bookname||'제목 없음')+'</div>'
+    + '<div class="book-author">'+(book.authors||'저자 미상')+'</div>'
+    + '<div class="book-meta">'+meta+'</div>'
+    + '</div>'
+    + '<div class="book-avail" id="av'+idx+'">'
     + '<span class="badge b-wait">확인 중</span>'
-    + '<div style="font-size:8px;color:var(--txt-d)">'+libName+'</div>'
+    + '<div style="font-size:11px;color:var(--txt-l)">'+libName+'</div>'
     + '</div>'
     + '</div>'
-    + (reason ? '<div class="card-reason">'+reason+'</div>' : '');
-  return div;
+    + (book.comment ? '<div class="book-comment">' + escHtml(book.comment) + '</div>' : '');
+
+  row.appendChild(card);
+  $('chat').appendChild(row);
+  scrollBottom();
 }
 
+/* ── 대출 상태 ── */
 function updateLoanStatus(isbn, detailUrl, idx) {
   var col = $('av'+idx); if(!col) return;
   var badge = col.querySelector('.badge');
-  realCheck(isbn).then(function(result) {
+  fetch(WORKER + '/realcheck?isbn=' + isbn).then(function(r){return r.json();}).then(function(result) {
     if (!result) {
       badge.className='badge b-no'; badge.textContent='확인 불가';
     } else if (result.totalCount === 0) {
@@ -305,11 +359,10 @@ function updateLoanStatus(isbn, detailUrl, idx) {
     }
     if (result && result.location) {
       var loc = document.createElement('div');
-      loc.className = 'card-loc';
+      loc.className = 'book-loc';
       loc.textContent = result.location.replace('[종로]','').trim();
       col.appendChild(loc);
     }
-    // 상세보기 링크 (realcheck에서 더 정확한 URL 있으면 사용)
     var url = (result && result.detailUrl) ? result.detailUrl : detailUrl;
     if (url) {
       var link = document.createElement('a');
@@ -317,57 +370,81 @@ function updateLoanStatus(isbn, detailUrl, idx) {
       link.textContent = '상세보기';
       col.appendChild(link);
     }
+  }).catch(function(){
+    badge.className='badge b-no'; badge.textContent='확인 불가';
   });
 }
 
+/* ── 메인 실행 ── */
 function go() {
   var q = $('q').value.trim();
-  if (!q) return;
+  if (!q || isLoading) return;
 
-  $('homeArea').style.display = 'none';
-  $('errBox').className = 'err';
-  $('cards').innerHTML = '';
-  $('rHead').className = 'r-head';
-  $('replyWrap').className = 'reply';
-  $('loader').className = 'loading on';
-  $('loaderTxt').textContent = 'AI 사서가 책을 고르고 있어요';
+  isLoading = true;
   $('goBtn').disabled = true;
-  $('main').scrollTop = 0;
+  $('q').value = '';
+  $('q').style.height = 'auto';
 
-  recommend(q).then(function(rec) {
-    $('loader').className = 'loading';
-    $('goBtn').disabled = false;
+  // 칩 숨기기
+  var chips = $('chat').querySelectorAll('.chips');
+  chips.forEach(function(c) { c.style.display = 'none'; });
 
-    $('replyTxt').textContent = rec.reply;
-    $('replyWrap').className = 'reply on';
+  // 사용자 버블
+  addUserBubble(q);
 
-    var books = rec.books || [];
-    if (!books.length) {
-      $('errBox').textContent = rec.message || '도서관에서 관련 책을 찾지 못했어요.\n다른 표현으로 시도해보세요.';
-      $('errBox').className = 'err on';
-      return;
-    }
+  // 로딩
+  var loadTimer = addLoading();
 
-    $('rTitle').textContent = 'AI 추천 도서';
-    $('rCount').textContent = books.length + '권';
-    $('rHead').className = 'r-head on';
+  // 추천 요청
+  fetch(WORKER + '/recommend', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ query: q })
+  }).then(function(r) {
+    if (!r.ok) return r.json().then(function(d){throw new Error(d.error||'오류');});
+    return r.json();
+  }).then(function(rec) {
+    removeLoading(loadTimer);
 
-    var frag = document.createDocumentFragment();
-    books.forEach(function(b, i) { frag.appendChild(renderCard(b, b.comment || null, i)); });
-    $('cards').appendChild(frag);
+    // AI 사서 공감 멘트 (타이핑)
+    return addAiBubble(rec.reply || '관련 책을 찾아볼게요.').then(function() {
+      var books = rec.books || [];
+      if (!books.length) {
+        return addAiBubble(rec.message || '도서관에서 관련 책을 찾지 못했어요.\n다른 표현으로 다시 말씀해주세요!', true);
+      }
 
-    // 대출 상태를 실시간으로 가져와서 업데이트
-    books.forEach(function(b, i) { updateLoanStatus(b.isbn13, b.detailUrl, i); });
+      // 책 카드들
+      books.forEach(function(b, i) {
+        setTimeout(function() {
+          addBookCard(b, i);
+          updateLoanStatus(b.isbn13, b.detailUrl, i);
+        }, i * 300);
+      });
+
+      // 마무리 멘트
+      setTimeout(function() {
+        addAiBubble('다른 고민이 있으시면 언제든 말씀해주세요!', true);
+        isLoading = false;
+        $('goBtn').disabled = false;
+      }, books.length * 300 + 400);
+    });
   }).catch(function(e) {
-    $('loader').className = 'loading';
+    removeLoading(loadTimer);
+    addAiBubble('죄송해요, 오류가 발생했어요.\n' + e.message + '\n다시 시도해주세요!', true);
+    isLoading = false;
     $('goBtn').disabled = false;
-    $('errBox').textContent = 'AI 추천 오류\n' + e.message;
-    $('errBox').className = 'err on';
   });
 }
 
-renderExamples();
-initLib();
+function scrollBottom() {
+  var c = $('chat');
+  setTimeout(function(){ c.scrollTop = c.scrollHeight; }, 50);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+init();
 </script>
 </body>
 </html>
