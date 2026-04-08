@@ -20,19 +20,26 @@ export default {
       try {
         const { query } = await request.json();
 
-        // ① Workers AI: 검색 키워드 + 사서 멘트
+        // ① Workers AI: 검색 키워드 + 공감 멘트
         const aiResult = await env.AI.run(AI_MODEL, {
           messages: [
             { role: 'system', content: 'JSON만 반환. 마크다운이나 설명 절대 금지. 반드시 JSON 객체만 출력해.' },
-            { role: 'user', content: `사용자의 고민에 맞는 도서관 검색 키워드 5개를 만들어줘.
+            { role: 'user', content: `당신은 도서관의 따뜻한 AI 사서예요. 사용자의 고민을 듣고 공감해주고, 도서관 검색 키워드를 만들어주세요.
 
 반드시 이 JSON 형식만 반환:
-{"keywords":["키워드1","키워드2","키워드3","키워드4","키워드5"],"reply":"사서가 건네는 따뜻한 위로의 말 2문장을 직접 작성해줘"}
+{"keywords":["키워드1","키워드2","키워드3","키워드4","키워드5"],"reply":"공감 멘트"}
+
+reply 규칙:
+- 반드시 해요체 (~에요, ~해요, ~있어요, ~드릴게요)
+- 사용자의 감정에 먼저 공감하고, 책을 찾아보겠다는 말로 마무리
+- 2~3문장, 따뜻하고 다정하게
+- 예시: "많이 지치셨을 것 같아요. 그런 마음이 들 때 위로가 되어줄 책이 분명 있을 거예요. 제가 찾아볼게요."
 
 키워드 규칙:
 - 반드시 5개
-- 명사 1~2개로 구성 (예: 위로, 에세이, 한강, 자존감, 공허)
-- 관련 유명 한국 작가명 1~2개 포함
+- 명사 1~2개로 구성 (예: 위로, 에세이, 철학, 자존감, 공허)
+- 작가명은 최대 1개만 포함, 나머지는 주제어/장르어로
+- 다양한 장르가 나오도록 (에세이, 소설, 심리, 시 등 섞기)
 - 문장 금지! "~할 때" 같은 서술형 금지
 
 사용자: ${query}` }
@@ -43,7 +50,7 @@ export default {
         const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
 
         const keywords = parsed.keywords || [];
-        const reply = parsed.reply || '관련 책을 찾아볼게요.';
+        const reply = cleanKorean(parsed.reply || '관련 책을 찾아볼게요.');
 
         // ② 정보나루 API: 키워드별 검색
         const allBooks = [];
@@ -132,8 +139,42 @@ export default {
         scored.sort((a, b) => b.score - a.score);
         const topScored = scored.slice(0, 5);
 
+        // ④ Workers AI 2차: 각 책별 추천 멘트 생성
+        const bookList = topScored.map((item, i) =>
+          `${i+1}. 「${item.book.bookname}」 - ${item.book.authors || '저자 미상'}`
+        ).join('\n');
+
+        let comments = [];
+        try {
+          const commentResult = await env.AI.run(AI_MODEL, {
+            messages: [
+              { role: 'system', content: 'JSON 배열만 반환. 마크다운이나 설명 절대 금지. 반드시 한국어만 사용. 중국어/일본어/영어 단어 절대 금지.' },
+              { role: 'user', content: `당신은 도서관의 따뜻한 AI 사서예요.
+
+사용자의 고민: "${query}"
+
+아래 책들을 이 사용자에게 왜 추천하는지, 각 책마다 1~2문장으로 추천 멘트를 써주세요.
+
+${bookList}
+
+규칙:
+- 반드시 해요체 (~에요, ~해요, ~있어요, ~거예요)
+- 반드시 한국어만 사용 (일본어, 영어 절대 금지)
+- "사용자"라는 단어 금지, 자연스럽게 말하기
+- 책의 내용과 고민을 연결해서 왜 이 책이 도움이 되는지 설명
+- 따뜻하고 다정한 톤, 각 1~2문장
+- 예시: "일상 속 작은 변화가 얼마나 큰 힘을 가지는지 알려주는 책이에요. 지친 마음에 다시 시작할 용기를 줄 거예요."
+
+반드시 이 JSON 형식만 반환 (책 수만큼):
+["1번 책 멘트","2번 책 멘트","3번 책 멘트","4번 책 멘트","5번 책 멘트"]` }
+            ]
+          });
+          const commentRaw = typeof commentResult.response === 'string' ? commentResult.response : JSON.stringify(commentResult.response);
+          comments = JSON.parse(commentRaw.replace(/```json|```/g, '').trim()).map(cleanKorean);
+        } catch(e) { /* 멘트 실패해도 책 결과는 반환 */ }
+
         // 결과 포맷
-        const bookResults = topScored.map(function(item) {
+        const bookResults = topScored.map(function(item, i) {
           const isbn = item.book.isbn13 || item.book.isbn;
           return {
             bookname: item.book.bookname,
@@ -144,6 +185,7 @@ export default {
             bookImageURL: item.book.bookImageURL,
             loan_count: item.book.loan_count,
             detailUrl: `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`,
+            comment: comments[i] || '',
             score: item.score
           };
         });
@@ -213,6 +255,17 @@ export default {
     return jsonErr('Not Found', 404);
   }
 };
+
+// 비한국어 문자(중국어/일본어) 및 깨진 텍스트 제거
+function cleanKorean(text) {
+  if (!text) return text;
+  return text
+    .replace(/[\u4E00-\u9FFF\u3400-\u4DBF]+/g, '')  // 한자(중국어)
+    .replace(/[\u3040-\u309F\u30A0-\u30FF]+/g, '')   // 히라가나/카타카나
+    .replace(/[.:]{3,}/g, '')                         // 깨진 반복 문자
+    .replace(/\s{2,}/g, ' ')                          // 다중 공백 정리
+    .trim();
+}
 
 function json(data) {
   return new Response(JSON.stringify(data), { headers:{'Content-Type':'application/json',...CORS} });

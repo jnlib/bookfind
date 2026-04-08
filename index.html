@@ -353,7 +353,7 @@ function go() {
     $('rHead').className = 'r-head on';
 
     var frag = document.createDocumentFragment();
-    books.forEach(function(b, i) { frag.appendChild(renderCard(b, null, i)); });
+    books.forEach(function(b, i) { frag.appendChild(renderCard(b, b.comment || null, i)); });
     $('cards').appendChild(frag);
 
     // 대출 상태를 실시간으로 가져와서 업데이트
