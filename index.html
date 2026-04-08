@@ -2,361 +2,388 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>서재 — 말로 찾는 책</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>서재 — 고민을 말하면 책을 찾아드려요</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f7f5f0;--surface:#fff;--border:#e8e3da;--border-d:#d0c9be;
-  --accent:#2d5a3d;--accent-l:#e8f0eb;
-  --txt:#1a1a18;--txt-m:#6b6560;--txt-d:#b0aa9f;
-  --green:#2d5a3d;--green-bg:#e8f0eb;
-  --red:#8b3a3a;--red-bg:#f5eaea;
-  --amber:#7a5c1e;--amber-bg:#fdf3dc;
-  --shadow:0 1px 3px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.04);
-  --shadow-h:0 2px 8px rgba(0,0,0,.08),0 8px 32px rgba(0,0,0,.06);
+  --bg:#0a0f1a;--surface:rgba(255,255,255,.06);--surface2:rgba(255,255,255,.1);
+  --glass:rgba(255,255,255,.08);--glass-border:rgba(255,255,255,.12);
+  --accent:#6ee7b7;--accent2:#34d399;--accent-glow:rgba(110,231,183,.15);
+  --blue:#60a5fa;--purple:#a78bfa;--pink:#f472b6;--amber:#fbbf24;
+  --txt:#f1f5f9;--txt-m:rgba(255,255,255,.55);--txt-d:rgba(255,255,255,.3);
+  --green:#22c55e;--red:#ef4444;
+  --radius:16px;--radius-s:10px;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:'Noto Sans KR',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
-.wrap{max-width:720px;margin:0 auto;padding:0 24px 80px}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;touch-action:manipulation}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--txt);display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(110,231,183,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(96,165,250,.06) 0%,transparent 50%);pointer-events:none;z-index:0}
 
-/* HEADER */
-header{padding:48px 0 36px;margin-bottom:40px;border-bottom:1px solid var(--border)}
-.logo{font-size:11px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-h1{font-family:'Playfair Display',serif;font-size:clamp(30px,5vw,44px);font-weight:400;line-height:1.15;letter-spacing:-.02em}
-h1 em{font-style:italic;color:var(--accent)}
-.sub{margin-top:10px;font-size:12px;font-weight:300;color:var(--txt-m)}
+/* ── 메인 컨테이너 (세로 키오스크) ── */
+.app{position:relative;z-index:1;width:100%;max-width:600px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden}
 
-/* SEARCH */
-.search-box{background:var(--surface);border:1.5px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;padding:6px 6px 6px 20px;gap:8px;margin-bottom:14px;transition:border-color .2s,box-shadow .2s}
-.search-box:focus-within{border-color:var(--accent);box-shadow:var(--shadow-h)}
-#q{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:300;color:var(--txt);padding:10px 0;caret-color:var(--accent)}
-#q::placeholder{color:var(--txt-d)}
-#goBtn{background:var(--accent);color:#fff;border:none;padding:11px 22px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:opacity .2s;flex-shrink:0}
-#goBtn:hover{opacity:.85}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:40px}
-.chip{font-size:12px;font-weight:300;padding:6px 14px;border:1px solid var(--border-d);color:var(--txt-m);cursor:pointer;background:var(--surface);transition:all .15s;border-radius:100px}
-.chip:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
+/* ── 헤더 ── */
+.hdr{flex-shrink:0;padding:40px 28px 0;text-align:center}
+.hdr-logo{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:20px}
+.hdr-logo::before{content:'';width:20px;height:1px;background:var(--accent);opacity:.5}
+.hdr-logo::after{content:'';width:20px;height:1px;background:var(--accent);opacity:.5}
+.hdr h1{font-size:clamp(26px,5vw,34px);font-weight:900;line-height:1.4;letter-spacing:-.02em;margin-bottom:12px}
+.hdr h1 .hl{background:linear-gradient(135deg,var(--accent),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr-sub{font-size:14px;font-weight:300;color:var(--txt-m);line-height:1.6}
 
-/* LOADER */
-.loader{display:none;padding:52px 0;text-align:center}
-.loader.on{display:block}
-.loader-txt{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--txt-m);animation:breathe 1.8s ease-in-out infinite;margin-bottom:16px}
-.loader-dots{display:flex;justify-content:center;gap:6px}
-.loader-dots span{width:5px;height:5px;background:var(--accent);border-radius:50%;opacity:.25;animation:dot 1.4s ease-in-out infinite}
-.loader-dots span:nth-child(2){animation-delay:.2s}
-.loader-dots span:nth-child(3){animation-delay:.4s}
+/* ── 상태 ── */
+.status{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;font-size:11px;color:var(--txt-d)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--txt-d)}
+.status-dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}
 
-/* 사서 말풍선 */
-.reply-wrap{display:none;margin-bottom:36px;animation:fadeUp .3s ease}
-.reply-wrap.on{display:flex;gap:14px;align-items:flex-start}
-.avatar{width:40px;height:40px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
-.bubble{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);padding:18px 22px;flex:1;position:relative}
-.bubble::before{content:'';position:absolute;left:-8px;top:14px;border:7px solid transparent;border-right-color:var(--border)}
-.bubble::after{content:'';position:absolute;left:-6px;top:15px;border:6px solid transparent;border-right-color:var(--surface)}
-.bubble-name{font-size:10px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
-.bubble-txt{font-size:14px;line-height:1.85;color:var(--txt);font-weight:300}
+/* ── 메인 콘텐츠 영역 ── */
+.main{flex:1;overflow-y:auto;padding:24px 28px;scroll-behavior:smooth}
+.main::-webkit-scrollbar{width:3px}
+.main::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
 
-/* RESULTS */
-.r-header{display:none;justify-content:space-between;align-items:baseline;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.r-header.on{display:flex}
-.r-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:400}
-.r-count{font-size:12px;color:var(--txt-m)}
+/* ── 홈 화면 (예시 문구) ── */
+.home{display:flex;flex-direction:column;gap:10px;padding-top:10px}
+.home-label{font-size:12px;font-weight:500;color:var(--txt-d);letter-spacing:.1em;margin-bottom:6px}
+.ex-card{background:var(--surface);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px 20px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.ex-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,var(--accent-glow));opacity:0;transition:opacity .3s}
+.ex-card:hover::before,.ex-card:active::before{opacity:1}
+.ex-card:active{transform:scale(.97)}
+.ex-emoji{font-size:1.6em;margin-bottom:8px;display:block}
+.ex-txt{font-size:15px;font-weight:500;color:var(--txt);line-height:1.5}
+.ex-sub{font-size:12px;color:var(--txt-d);margin-top:4px}
 
-/* CARDS */
-.grid{display:flex;flex-direction:column;gap:12px}
-.card{background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);opacity:0;transform:translateY(6px);animation:fadeUp .4s forwards;transition:border-color .2s,box-shadow .2s}
-.card:hover{border-color:var(--border-d);box-shadow:var(--shadow-h)}
+/* ── 검색바 ── */
+.search{flex-shrink:0;padding:16px 28px 32px;background:linear-gradient(transparent,var(--bg) 20%)}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1.5px solid var(--glass-border);border-radius:14px;padding:6px 6px 6px 18px;transition:border-color .2s,box-shadow .2s}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.search-box input{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:400;color:var(--txt);padding:12px 0;caret-color:var(--accent)}
+.search-box input::placeholder{color:var(--txt-d)}
+.search-btn{width:48px;height:48px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:var(--bg);font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:transform .15s,opacity .15s}
+.search-btn:hover{opacity:.85}
+.search-btn:active{transform:scale(.9)}
+.search-btn:disabled{opacity:.3;cursor:not-allowed}
 
-/* 카드 상단: 표지 + 정보 + 대출현황 */
-.card-top{display:grid;grid-template-columns:72px 1fr auto}
-.cvr-wrap{overflow:hidden;background:#f0ede8}
-.cvr{width:72px;height:100%;min-height:108px;object-fit:cover;display:block}
-.cvr-ph{width:72px;min-height:108px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--txt-d)}
-.cbody{padding:16px 18px;min-width:0}
-.ctitle{font-family:'Playfair Display',serif;font-size:15px;font-weight:400;line-height:1.5;color:var(--txt);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cauthor{font-size:12px;font-weight:300;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmeta{font-size:11px;color:var(--txt-d)}
-.cloans{margin-top:6px;font-size:11px;color:var(--txt-m)}
+/* ── 로딩 ── */
+.loading{display:none;text-align:center;padding:60px 20px}
+.loading.on{display:block}
+.loading-icon{font-size:3em;margin-bottom:16px;animation:bounce 1.2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.loading-txt{font-size:16px;font-weight:500;color:var(--txt-m);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.loading-sub{font-size:12px;color:var(--txt-d);margin-top:8px}
 
-/* 대출 현황 컬럼 */
-.avail-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 14px;border-left:1px solid var(--border);min-width:82px;gap:5px;background:#fafaf8}
-.badge{font-size:11px;font-weight:500;padding:4px 8px;border-radius:2px;white-space:nowrap;text-align:center}
-.b-ok{background:var(--green-bg);color:var(--green)}
-.b-no{background:var(--red-bg);color:var(--red)}
-.b-wait{background:#f0ede8;color:var(--txt-d);animation:breathe 1.4s ease-in-out infinite}
-.b-link{background:var(--amber-bg);color:var(--amber);text-decoration:none;display:block;text-align:center;font-size:10px;padding:3px 6px;border-radius:2px;margin-top:2px}
-.b-link:hover{opacity:.8}
-.alib{font-size:9px;font-weight:300;color:var(--txt-d);text-align:center;line-height:1.5}
-.aloc{font-size:9px;color:var(--txt-d);text-align:center;line-height:1.4;margin-top:2px;max-width:70px;word-break:keep-all}
+/* ── AI 사서 말풍선 ── */
+.reply{display:none;margin-bottom:20px;animation:fadeUp .4s ease}
+.reply.on{display:flex;gap:12px;align-items:flex-start}
+.reply-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.reply-bub{background:var(--surface);border:1px solid var(--glass-border);border-radius:4px var(--radius) var(--radius) var(--radius);padding:16px 18px;flex:1}
+.reply-name{font-size:10px;font-weight:500;letter-spacing:.15em;color:var(--accent);margin-bottom:6px;text-transform:uppercase}
+.reply-txt{font-size:14px;line-height:1.8;color:var(--txt-m);font-weight:300}
 
-/* 추천 이유 (카드 하단) */
-.reason{border-top:1px solid var(--border);padding:12px 18px;background:#fafaf8;font-size:13px;line-height:1.75;color:var(--txt-m);font-weight:300;font-style:italic}
-.reason::before{content:'💬 ';font-style:normal}
+/* ── 결과 헤더 ── */
+.r-head{display:none;align-items:center;justify-content:space-between;margin-bottom:14px}
+.r-head.on{display:flex}
+.r-title{font-size:16px;font-weight:700}
+.r-count{font-size:12px;color:var(--txt-d);background:var(--surface);padding:4px 10px;border-radius:20px}
+.r-back{font-size:13px;color:var(--accent);cursor:pointer;padding:6px 14px;border:1px solid var(--glass-border);border-radius:20px;background:none;font-family:'Noto Sans KR',sans-serif}
+.r-back:hover{background:var(--surface)}
 
-/* ERR */
-.err{display:none;background:#fff8f8;border:1px solid #f0d4d4;padding:16px 20px;margin-bottom:24px;font-size:13px;color:var(--red);line-height:1.7;white-space:pre-line}
+/* ── 책 카드 ── */
+.cards{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;opacity:0;transform:translateY(10px);animation:fadeUp .4s forwards;transition:border-color .2s}
+.card:hover{border-color:rgba(110,231,183,.3)}
+.card-top{display:flex}
+.card-img{width:80px;min-height:115px;background:rgba(255,255,255,.03);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.card-img img{width:100%;height:100%;object-fit:cover}
+.card-img .ph{font-size:28px;color:var(--txt-d)}
+.card-body{flex:1;padding:14px 16px;min-width:0}
+.card-title{font-size:15px;font-weight:700;line-height:1.5;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-author{font-size:12px;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-meta{font-size:11px;color:var(--txt-d)}
+.card-loans{font-size:11px;color:var(--txt-d);margin-top:4px}
+.card-avail{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;border-left:1px solid var(--glass-border);min-width:80px;gap:4px}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.b-ok{background:rgba(34,197,94,.15);color:var(--green)}
+.b-no{background:rgba(239,68,68,.15);color:var(--red)}
+.b-wait{background:var(--surface2);color:var(--txt-d);animation:pulse 1.2s infinite}
+.b-link{font-size:10px;color:var(--accent);text-decoration:none;margin-top:2px;padding:2px 6px;border-radius:4px;background:var(--surface)}
+.b-link:hover{background:var(--surface2)}
+.card-loc{font-size:9px;color:var(--txt-d);text-align:center;margin-top:2px;max-width:70px;word-break:keep-all}
+.card-reason{border-top:1px solid var(--glass-border);padding:12px 16px;font-size:13px;line-height:1.7;color:var(--txt-m);font-weight:300}
+.card-reason::before{content:'💬 '}
+
+/* ── 에러 ── */
+.err{display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-s);padding:16px;margin-bottom:16px;font-size:13px;color:var(--red);line-height:1.7;white-space:pre-line}
 .err.on{display:block}
 
-/* FOOTER */
-footer{margin-top:64px;padding:24px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.ft-l{font-size:11px;font-weight:300;color:var(--txt-d);letter-spacing:.1em;text-transform:uppercase}
-.ft-r{font-size:11px;color:var(--txt-d);display:flex;align-items:center;gap:6px}
-.sdot{width:6px;height:6px;border-radius:50%;display:inline-block;background:var(--txt-d)}
-.sdot.ok{background:var(--green)}
-
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-@keyframes breathe{0%,100%{opacity:.4}50%{opacity:1}}
-@keyframes dot{0%,80%,100%{opacity:.25}40%{opacity:1}}
 
-@media(max-width:520px){
-  .card-top{grid-template-columns:60px 1fr}
-  .avail-col{grid-column:2;border-left:none;border-top:1px solid var(--border);flex-direction:row;justify-content:flex-start;padding:10px 14px;background:none}
+/* ── 모바일 대응 ── */
+@media(max-width:480px){
+  .hdr{padding:28px 20px 0}
+  .main{padding:20px}
+  .search{padding:14px 20px 24px}
+  .card-img{width:65px;min-height:95px}
+  .card-avail{min-width:70px;padding:10px 8px}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
 
-<header>
-  <div class="logo">서재 · Seojae</div>
-  <h1>읽고 싶은 책을,<br><em>말로</em> 찾아드려요</h1>
-  <p class="sub">Gemini가 맥락을 이해하고 딱 맞는 책을 직접 골라드려요 · 종로도서관 실시간 대출 현황</p>
-</header>
-
-<div class="search-box">
-  <input id="q" type="text" autocomplete="off" spellcheck="false"
-    placeholder="예) 머리아플때 읽으면 좋은 책, 염세적인 철학책" />
-  <button id="goBtn" onclick="go()">찾아줘</button>
-</div>
-
-<div class="chips">
-  <button class="chip" onclick="fill(this)">염세적인 철학책</button>
-  <button class="chip" onclick="fill(this)">죽음과 실존을 다룬 소설</button>
-  <button class="chip" onclick="fill(this)">자본주의 비판서</button>
-  <button class="chip" onclick="fill(this)">동양 고전 철학</button>
-  <button class="chip" onclick="fill(this)">SF 디스토피아 소설</button>
-  <button class="chip" onclick="fill(this)">인간 본성에 관한 책</button>
-  <button class="chip" onclick="fill(this)">근대 한국소설</button>
-  <button class="chip" onclick="fill(this)">불안과 우울 심리책</button>
-</div>
-
-<!-- 사서 말풍선 -->
-<div class="reply-wrap" id="replyWrap">
-  <div class="avatar">📚</div>
-  <div class="bubble">
-    <div class="bubble-name">종로도서관 사서</div>
-    <div class="bubble-txt" id="bubbleTxt"></div>
+  <!-- 헤더 -->
+  <div class="hdr">
+    <div class="hdr-logo">서재 · SEOJAE</div>
+    <h1>고민을 말하면<br><span class="hl">책을 찾아드려요</span></h1>
+    <p class="hdr-sub">지금 느끼는 감정, 겪고 있는 상황을 편하게 말씀해주세요</p>
+    <div class="status">
+      <span class="status-dot" id="sDot"></span>
+      <span id="sLib">연결 중…</span>
+    </div>
   </div>
-</div>
 
-<div class="err" id="errBox"></div>
+  <!-- 메인 콘텐츠 -->
+  <div class="main" id="main">
 
-<div class="loader" id="loader">
-  <div class="loader-txt" id="loaderTxt">책을 고르는 중</div>
-  <div class="loader-dots"><span></span><span></span><span></span></div>
-</div>
+    <!-- 홈: 예시 카드 -->
+    <div id="homeArea">
+      <div class="home-label">이런 고민이 있으신가요?</div>
+      <div class="home" id="homeCards"></div>
+    </div>
 
-<div class="r-header" id="rHeader">
-  <div class="r-title" id="rTitle"></div>
-  <div class="r-count" id="rCount"></div>
-</div>
+    <!-- 로딩 -->
+    <div class="loading" id="loader">
+      <div class="loading-icon">📚</div>
+      <div class="loading-txt" id="loaderTxt">AI 사서가 책을 고르고 있어요</div>
+      <div class="loading-sub">잠시만 기다려주세요</div>
+    </div>
 
-<div class="grid" id="grid"></div>
+    <!-- 에러 -->
+    <div class="err" id="errBox"></div>
 
-<footer>
-  <div class="ft-l">서재 · Seojae</div>
-  <div class="ft-r">
-    <span class="sdot" id="statusDot"></span>
-    <span id="libStatus">연결 중…</span>
+    <!-- AI 사서 말풍선 -->
+    <div class="reply" id="replyWrap">
+      <div class="reply-av">📖</div>
+      <div class="reply-bub">
+        <div class="reply-name">AI 사서</div>
+        <div class="reply-txt" id="replyTxt"></div>
+      </div>
+    </div>
+
+    <!-- 결과 -->
+    <div class="r-head" id="rHead">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="r-title" id="rTitle">추천 도서</span>
+        <span class="r-count" id="rCount"></span>
+      </div>
+      <button class="r-back" onclick="goHome()">다시 찾기</button>
+    </div>
+    <div class="cards" id="cards"></div>
   </div>
-</footer>
+
+  <!-- 검색바 -->
+  <div class="search">
+    <div class="search-box">
+      <input id="q" type="text" autocomplete="off" spellcheck="false"
+        placeholder="고민이나 상황을 편하게 말해주세요..."
+        onkeydown="if(event.key==='Enter')go()">
+      <button class="search-btn" id="goBtn" onclick="go()">→</button>
+    </div>
+  </div>
 
 </div>
+
 <script>
-const WORKER = 'https://seojae.hdh1231.workers.dev';
-let libCode = '111021', libName = '종로도서관';
-const $ = id => document.getElementById(id);
+var WORKER = 'https://seojae.hdh1231.workers.dev';
+var libCode = '111021', libName = '종로도서관';
+
+var EXAMPLES = [
+  {emoji:'😔', txt:'요즘 마음이 공허하고 허무해요', sub:'존재와 의미에 대한 책'},
+  {emoji:'😰', txt:'직장에서 번아웃이 온 것 같아요', sub:'쉼과 회복에 관한 책'},
+  {emoji:'🤔', txt:'살면서 중요한 결정을 앞두고 있어요', sub:'선택과 결단의 지혜'},
+  {emoji:'💔', txt:'이별 후에 마음을 추스르고 싶어요', sub:'위로와 치유의 이야기'},
+  {emoji:'🌱', txt:'새로운 일을 시작하는데 자신이 없어요', sub:'용기와 도전에 관한 책'},
+  {emoji:'😤', txt:'세상이 불공평하다고 느껴져요', sub:'사회와 정의에 대한 시선'},
+  {emoji:'🧒', txt:'아이에게 읽어줄 좋은 그림책이 필요해요', sub:'따뜻한 그림책 추천'},
+  {emoji:'🌙', txt:'잠이 안 올 때 읽을 잔잔한 책이요', sub:'밤에 어울리는 에세이'},
+];
+
+var $ = function(id) { return document.getElementById(id); };
+
+// 예시 카드 렌더
+function renderExamples() {
+  var html = '';
+  EXAMPLES.forEach(function(ex) {
+    html += '<div class="ex-card" onclick="fillAndGo(\'' + ex.txt.replace(/'/g,"\\'") + '\')">'
+      + '<span class="ex-emoji">' + ex.emoji + '</span>'
+      + '<div class="ex-txt">' + ex.txt + '</div>'
+      + '<div class="ex-sub">' + ex.sub + '</div></div>';
+  });
+  $('homeCards').innerHTML = html;
+}
+
+function fillAndGo(txt) {
+  $('q').value = txt;
+  go();
+}
+
+function goHome() {
+  $('homeArea').style.display = 'block';
+  $('replyWrap').className = 'reply';
+  $('rHead').className = 'r-head';
+  $('cards').innerHTML = '';
+  $('errBox').className = 'err';
+  $('q').value = '';
+  $('main').scrollTop = 0;
+}
 
 // 초기화
-async function initLib() {
-  try {
-    const d = await (await fetch(`${WORKER}/libcode`)).json();
+function initLib() {
+  fetch(WORKER + '/libcode').then(function(r){return r.json();}).then(function(d) {
     libCode = d.libCode; libName = d.libName;
-    $('statusDot').className = 'sdot ok';
-    $('libStatus').textContent = `${libName} 연결됨`;
-  } catch {
-    $('statusDot').className = 'sdot';
-    $('libStatus').textContent = `${libName} 오류`;
-  }
-}
-
-// Gemini: 책 직접 추천 + 이유
-async function recommend(query) {
-  const r = await fetch(`${WORKER}/recommend`, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ query })
+    $('sDot').className = 'status-dot ok';
+    $('sLib').textContent = libName + ' 연결됨';
+  }).catch(function() {
+    $('sDot').className = 'status-dot';
+    $('sLib').textContent = libName + ' 오류';
   });
-  if (!r.ok) throw new Error((await r.json().catch(()=>({}))).error ?? `오류 ${r.status}`);
-  return r.json();
 }
 
-// 도서관 API: 책 검색
-async function searchBook(keyword) {
-  const qs = new URLSearchParams({_endpoint:'srchBooks', keyword, pageSize:'5'});
-  const d = await (await fetch(`${WORKER}/library?${qs}`)).json();
-  let docs = d.response?.docs ?? [];
-  if (!Array.isArray(docs)) docs = [docs];
-  return docs.map(i => i.doc ?? i).filter(b => b.bookname);
+// Gemini 추천
+function recommend(query) {
+  return fetch(WORKER + '/recommend', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ query: query })
+  }).then(function(r) {
+    if (!r.ok) return r.json().then(function(d){throw new Error(d.error||'오류');});
+    return r.json();
+  });
 }
 
-// 종로도서관 홈페이지 크롤링: 실제 대출 현황
-async function realCheck(isbn) {
-  if (!isbn) return null;
-  try {
-    const d = await (await fetch(`${WORKER}/realcheck?isbn=${isbn}`)).json();
-    return d;
-  } catch { return null; }
+// 도서관 검색
+function searchBook(keyword) {
+  var qs = new URLSearchParams({_endpoint:'srchBooks', keyword:keyword, pageSize:'5'});
+  return fetch(WORKER + '/library?' + qs).then(function(r){return r.json();}).then(function(d) {
+    var docs = d.response && d.response.docs ? d.response.docs : [];
+    if (!Array.isArray(docs)) docs = [docs];
+    return docs.map(function(i){return i.doc||i;}).filter(function(b){return b.bookname;});
+  });
+}
+
+// 대출 현황
+function realCheck(isbn) {
+  if (!isbn) return Promise.resolve(null);
+  return fetch(WORKER + '/realcheck?isbn=' + isbn).then(function(r){return r.json();}).catch(function(){return null;});
 }
 
 // 카드 렌더
 function renderCard(book, reason, idx) {
-  const div = document.createElement('div');
+  var div = document.createElement('div');
   div.className = 'card';
-  div.style.animationDelay = `${idx * 80}ms`;
-  const hasImg = !!book.bookImageURL;
-  const meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
-  const loans = book.loan_count ? `<div class="cloans">대출 ${Number(book.loan_count).toLocaleString()}회</div>` : '';
+  div.style.animationDelay = (idx * 100) + 'ms';
+  var hasImg = !!book.bookImageURL;
+  var meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
+  var loans = book.loan_count ? '<div class="card-loans">대출 ' + Number(book.loan_count).toLocaleString() + '회</div>' : '';
 
-  div.innerHTML = `
-    <div class="card-top">
-      <div class="cvr-wrap">
-        ${hasImg ? `<img class="cvr" src="${book.bookImageURL}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-        <div class="cvr-ph" style="${hasImg?'display:none':''}">📖</div>
-      </div>
-      <div class="cbody">
-        <div class="ctitle">${book.bookname||'제목 없음'}</div>
-        <div class="cauthor">${book.authors||'저자 미상'}</div>
-        <div class="cmeta">${meta}</div>
-        ${loans}
-      </div>
-      <div class="avail-col" id="av${idx}">
-        <span class="badge b-wait">확인 중</span>
-        <div class="alib">${libName}</div>
-      </div>
-    </div>
-    ${reason ? `<div class="reason">${reason}</div>` : ''}`;
+  div.innerHTML = '<div class="card-top">'
+    + '<div class="card-img">'
+    + (hasImg ? '<img src="'+book.bookImageURL+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : '')
+    + '<div class="ph" style="'+(hasImg?'display:none':'')+'">📖</div></div>'
+    + '<div class="card-body">'
+    + '<div class="card-title">'+(book.bookname||'제목 없음')+'</div>'
+    + '<div class="card-author">'+(book.authors||'저자 미상')+'</div>'
+    + '<div class="card-meta">'+meta+'</div>'
+    + loans + '</div>'
+    + '<div class="card-avail" id="av'+idx+'"><span class="badge b-wait">확인 중</span><div style="font-size:9px;color:var(--txt-d)">'+libName+'</div></div>'
+    + '</div>'
+    + (reason ? '<div class="card-reason">'+reason+'</div>' : '');
   return div;
 }
 
-async function updateAvail(isbn, idx) {
-  const col = $(`av${idx}`); if (!col) return;
-  const badge = col.querySelector('.badge');
-  const result = await realCheck(isbn);
-
-  if (!result) {
-    badge.className = 'badge b-no';
-    badge.textContent = '확인 불가';
-    return;
-  }
-
-  if (result.available) {
-    badge.className = 'badge b-ok';
-    badge.textContent = '대출 가능';
-  } else {
-    badge.className = 'badge b-no';
-    badge.textContent = '대출 불가';
-  }
-
-  // 자료실 위치 표시
-  if (result.location) {
-    const loc = document.createElement('div');
-    loc.className = 'aloc';
-    loc.textContent = result.location.replace('[종로]','').trim();
-    col.appendChild(loc);
-  }
-
-  // 홈페이지 링크
-  if (result.detailUrl) {
-    const link = document.createElement('a');
-    link.className = 'b-link';
-    link.href = result.detailUrl;
-    link.target = '_blank';
-    link.textContent = '홈페이지 ↗';
-    col.appendChild(link);
-  }
+function updateAvail(isbn, idx) {
+  var col = $('av'+idx); if(!col) return;
+  var badge = col.querySelector('.badge');
+  realCheck(isbn).then(function(result) {
+    if (!result) { badge.className='badge b-no'; badge.textContent='확인 불가'; return; }
+    if (result.available) { badge.className='badge b-ok'; badge.textContent='대출 가능'; }
+    else { badge.className='badge b-no'; badge.textContent='대출 불가'; }
+    if (result.location) {
+      var loc = document.createElement('div');
+      loc.className = 'card-loc';
+      loc.textContent = result.location.replace('[종로]','').trim();
+      col.appendChild(loc);
+    }
+    if (result.detailUrl) {
+      var link = document.createElement('a');
+      link.className = 'b-link'; link.href = result.detailUrl; link.target = '_blank';
+      link.textContent = '상세보기 ↗';
+      col.appendChild(link);
+    }
+  });
 }
 
-// UI
-function loading(on, txt='') {
-  $('loader').classList.toggle('on', on);
-  if (txt) $('loaderTxt').textContent = txt;
-}
-function clearAll() {
-  $('errBox').classList.remove('on');
-  $('grid').innerHTML = '';
-  $('rHeader').classList.remove('on');
-  $('replyWrap').classList.remove('on');
-  $('replyWrap').style.display = 'none';
-}
-function fill(btn) { $('q').value = btn.textContent; go(); }
-function showErr(msg) { $('errBox').textContent = msg; $('errBox').classList.add('on'); }
+// 메인 실행
+function go() {
+  var q = $('q').value.trim();
+  if (!q) return;
 
-async function go() {
-  const q = $('q').value.trim(); if (!q) return;
-  clearAll();
+  $('homeArea').style.display = 'none';
+  $('errBox').className = 'err';
+  $('cards').innerHTML = '';
+  $('rHead').className = 'r-head';
+  $('replyWrap').className = 'reply';
+  $('loader').className = 'loading on';
+  $('loaderTxt').textContent = 'AI 사서가 책을 고르고 있어요';
+  $('goBtn').disabled = true;
+  $('main').scrollTop = 0;
 
-  // 1. Gemini 추천
-  loading(true, 'Gemini가 책을 고르는 중…');
-  let rec;
-  try {
-    rec = await recommend(q);
-  } catch(e) {
-    loading(false);
-    showErr(`Gemini 오류\n${e.message}`); return;
-  }
+  recommend(q).then(function(rec) {
+    $('replyTxt').textContent = rec.reply;
+    $('replyWrap').className = 'reply on';
+    $('loaderTxt').textContent = '도서관에서 책을 찾고 있어요';
 
-  // 사서 말풍선
-  $('bubbleTxt').textContent = rec.reply;
-  $('replyWrap').style.display = 'flex';
-  $('replyWrap').classList.add('on');
+    var books = [], reasons = [];
+    var recBooks = rec.books || [];
+    var chain = Promise.resolve();
 
-  // 2. 각 추천 책 도서관에서 검색
-  loading(true, '도서관에서 책을 찾는 중…');
-  const books = [];
-  const reasons = [];
+    recBooks.forEach(function(recBook) {
+      chain = chain.then(function() {
+        return searchBook(recBook.searchKeyword || recBook.title).then(function(results) {
+          var best = results.find(function(b){return b.bookname && b.bookname.includes(recBook.title.slice(0,4));}) || results[0];
+          if (best) { books.push(best); reasons.push(recBook.reason); }
+        }).catch(function(){});
+      });
+    });
 
-  for (const recBook of (rec.books ?? [])) {
-    try {
-      const results = await searchBook(recBook.searchKeyword || recBook.title);
-      // 제목이 가장 비슷한 책 선택
-      const best = results.find(b =>
-        b.bookname?.includes(recBook.title.slice(0,4))
-      ) || results[0];
-      if (best) { books.push(best); reasons.push(recBook.reason); }
-    } catch {}
-  }
+    return chain.then(function() {
+      $('loader').className = 'loading';
+      $('goBtn').disabled = false;
 
-  loading(false);
+      if (!books.length) {
+        $('errBox').textContent = '추천 도서를 도서관에서 찾지 못했어요.\n다른 표현으로 시도해보세요.';
+        $('errBox').className = 'err on';
+        return;
+      }
 
-  if (!books.length) {
-    showErr(`추천 도서를 도서관에서 찾지 못했어요.\n다른 표현으로 시도해보세요.`); return;
-  }
+      $('rTitle').textContent = 'AI 추천 도서';
+      $('rCount').textContent = books.length + '권';
+      $('rHead').className = 'r-head on';
 
-  $('rTitle').textContent = 'Gemini 추천 도서';
-  $('rCount').textContent = `${books.length}권`;
-  $('rHeader').classList.add('on');
-
-  const frag = document.createDocumentFragment();
-  books.forEach((b, i) => frag.appendChild(renderCard(b, reasons[i], i)));
-  $('grid').appendChild(frag);
-
-  // 3. 대출 현황 (크롤링)
-  books.forEach((b, i) => updateAvail(b.isbn13, i));
+      var frag = document.createDocumentFragment();
+      books.forEach(function(b, i) { frag.appendChild(renderCard(b, reasons[i], i)); });
+      $('cards').appendChild(frag);
+      books.forEach(function(b, i) { updateAvail(b.isbn13, i); });
+    });
+  }).catch(function(e) {
+    $('loader').className = 'loading';
+    $('goBtn').disabled = false;
+    $('errBox').textContent = 'AI 추천 오류\n' + e.message;
+    $('errBox').className = 'err on';
+  });
 }
 
-$('q').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+renderExamples();
 initLib();
 </script>
 </body>
