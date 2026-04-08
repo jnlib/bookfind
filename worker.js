@@ -1,8 +1,8 @@
-const GEMINI_KEY = 'AIzaSyD2ydSdzN4Hdu1e4d3a2Pfv1iBe-w6EyjE';
 const LIB_KEY    = '07f4b234a27b4e8d0bbaef41e070810c1f626991298cd1c5798356b2ca8ff62b';
 const LIB_BASE   = 'https://data4library.kr/api';
 const LIB_CODE   = '111021';
 const JN_BASE    = 'https://jnlib.sen.go.kr';
+const AI_MODEL   = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -11,51 +11,41 @@ const CORS = {
 };
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
     const url = new URL(request.url);
 
-    // ── /recommend ── 새 설계: 키워드 추출 → 정보나루 검색 → 점수 정렬 ──
+    // ── /recommend ── Workers AI → 정보나루 검색 → 점수 정렬 ──
     if (url.pathname === '/recommend' && request.method === 'POST') {
       try {
         const { query } = await request.json();
 
-        // ① Gemini 1회: 검색 키워드 + 사서 멘트
-        const prompt = `사용자의 고민에 맞는 책을 도서관에서 검색하기 위한 키워드를 만들어줘.
+        // ① Workers AI: 검색 키워드 + 사서 멘트
+        const aiResult = await env.AI.run(AI_MODEL, {
+          messages: [
+            { role: 'system', content: 'JSON만 반환. 마크다운이나 설명 절대 금지. 반드시 JSON 객체만 출력해.' },
+            { role: 'user', content: `사용자의 고민에 맞는 도서관 검색 키워드 5개를 만들어줘.
 
-JSON만 반환 (마크다운 없이):
-{
-  "keywords": ["키워드1","키워드2","키워드3","키워드4","키워드5"],
-  "reply": "사서가 건네는 따뜻한 말 2-3문장"
-}
+반드시 이 JSON 형식만 반환:
+{"keywords":["키워드1","키워드2","키워드3","키워드4","키워드5"],"reply":"사서가 건네는 따뜻한 위로의 말 2문장을 직접 작성해줘"}
 
-키워드 규칙 (매우 중요):
-- 도서관 도서 검색 시스템에 입력할 1~2단어짜리 검색어
-- 문장 금지! 반드시 명사 1~2개로 구성 (예: 위로, 에세이, 철학, 심리학, 공허)
-- 관련 유명 작가명 1~2개 포함 (예: 한강, 김수현, 알랭 드 보통)
-- 관련 장르/주제어 포함 (예: 에세이, 소설, 심리, 자존감, 힐링)
-- 절대 "~할 때", "~에 대한" 같은 서술형 쓰지 마
+키워드 규칙:
+- 반드시 5개
+- 명사 1~2개로 구성 (예: 위로, 에세이, 한강, 자존감, 공허)
+- 관련 유명 한국 작가명 1~2개 포함
+- 문장 금지! "~할 때" 같은 서술형 금지
 
-좋은 예: ["공허","위로","에세이","한강","자존감"]
-나쁜 예: ["마음이 힘들 때","슬픔 극복하는 방법","정서적 안정을 위한"]
+사용자: ${query}` }
+          ]
+        });
 
-사용자: ${query}`;
-
-        const gemRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_KEY}`,
-          { method:'POST', headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.3}}) }
-        );
-        if (!gemRes.ok) throw new Error('Gemini 오류 ' + gemRes.status);
-        const gemData = await gemRes.json();
-        const raw = gemData.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
-        const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+        const raw = typeof aiResult.response === 'string' ? aiResult.response : JSON.stringify(aiResult.response);
+        const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
 
         const keywords = parsed.keywords || [];
         const reply = parsed.reply || '관련 책을 찾아볼게요.';
-        const criteria = parsed.criteria || '';
 
-        // ② 정보나루 API: 키워드별 검색 (종로도서관 소장 도서)
+        // ② 정보나루 API: 키워드별 검색
         const allBooks = [];
         const seenIsbns = new Set();
 
@@ -99,8 +89,7 @@ JSON만 반환 (마크다운 없이):
         });
         preSorted.sort((a, b) => b.ps - a.ps);
 
-        // bookExist API로 종로도서관 소장 확인 (빠르고 안정적)
-        // 대출 상태/상세 링크는 프론트에서 /realcheck로 따로 확인
+        // bookExist API로 종로도서관 소장 확인
         const top = preSorted.slice(0, 15);
         const existResults = await Promise.all(top.map(item => {
           const isbn = item.book.isbn13 || item.book.isbn;
@@ -117,14 +106,13 @@ JSON만 반환 (마크다운 없이):
           return json({ reply, books: [], message: '도서관에서 관련 책을 찾지 못했어요.' });
         }
 
-        // ③ 점수 계산 (Gemini 호출 없이 Worker에서)
+        // ③ 점수 계산
         const scored = allBooks.map(function(b) {
           let score = 0;
           const title = (b.bookname || '').toLowerCase();
           const author = (b.authors || '').toLowerCase();
           const desc = (b.description || '').toLowerCase();
 
-          // 키워드 매칭 점수
           keywords.forEach(function(kw) {
             const kwl = kw.toLowerCase();
             if (title.includes(kwl)) score += 15;
@@ -132,16 +120,6 @@ JSON만 반환 (마크다운 없이):
             if (desc.includes(kwl)) score += 5;
           });
 
-          // criteria 매칭
-          if (criteria) {
-            const cWords = criteria.split(/\s+/);
-            cWords.forEach(function(w) {
-              if (w.length >= 2 && title.includes(w.toLowerCase())) score += 10;
-              if (w.length >= 2 && desc.includes(w.toLowerCase())) score += 3;
-            });
-          }
-
-          // 대출 인기도 가산
           const loans = parseInt(b.loan_count) || 0;
           if (loans > 100) score += 8;
           else if (loans > 50) score += 5;
@@ -151,17 +129,12 @@ JSON만 반환 (마크다운 없이):
           return { book: b, score };
         });
 
-        // 점수 높은 순 정렬 → 상위 5권
         scored.sort((a, b) => b.score - a.score);
         const topScored = scored.slice(0, 5);
 
         // 결과 포맷
         const bookResults = topScored.map(function(item) {
           const isbn = item.book.isbn13 || item.book.isbn;
-          const vCtrl = item.book._vCtrl;
-          const detailUrl = vCtrl
-            ? `${JN_BASE}/jnlib/intro/search/detail.do?vLoca=111021&vCtrl=${vCtrl}&isbn=${isbn}&menu_idx=4`
-            : `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`;
           return {
             bookname: item.book.bookname,
             authors: item.book.authors,
@@ -170,12 +143,12 @@ JSON만 반환 (마크다운 없이):
             isbn13: isbn,
             bookImageURL: item.book.bookImageURL,
             loan_count: item.book.loan_count,
-            detailUrl: detailUrl,
+            detailUrl: `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`,
             score: item.score
           };
         });
 
-        return json({ reply, criteria, books: bookResults });
+        return json({ reply, books: bookResults });
 
       } catch(e) { return jsonErr(e.message, 500); }
     }
@@ -214,7 +187,7 @@ JSON만 반환 (마크다운 없이):
         const vCtrlMatch = html.match(/vCtrl="(\d+)"/);
         const vCtrl = vCtrlMatch ? vCtrlMatch[1] : null;
 
-        // 자료상태 필드에서 실제 대출 상태 파싱 (html.includes 대신 정확한 매칭)
+        // 자료상태 필드에서 실제 대출 상태 파싱
         const statusMatches = [...html.matchAll(/자료상태\s*:[\s\S]*?(대출가능|대출중|대출불가)/g)];
         const availCount = statusMatches.filter(m => m[1] === '대출가능').length;
         const totalCount = statusMatches.length;
