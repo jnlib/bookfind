@@ -96,17 +96,27 @@ reply 규칙:
         });
         preSorted.sort((a, b) => b.ps - a.ps);
 
-        // bookExist API로 종로도서관 소장 확인
-        const top = preSorted.slice(0, 15);
-        const existResults = await Promise.all(top.map(item => {
+        // 종로도서관 홈페이지에서 직접 확인 (실제 있는 책 + 대출상태)
+        // 상위 후보를 순차 확인, 3권 확보되면 중단
+        for (const item of preSorted.slice(0, 20)) {
+          if (allBooks.length >= 3) break;
           const isbn = item.book.isbn13 || item.book.isbn;
-          return fetch(`${LIB_BASE}/bookExist?authKey=${LIB_KEY}&format=json&isbn13=${isbn}&libCode=${LIB_CODE}`)
-            .then(r => r.json())
-            .then(d => ({ book: item.book, exists: d.response?.result?.hasBook === 'Y' }))
-            .catch(() => ({ book: item.book, exists: false }));
-        }));
-        for (const item of existResults) {
-          if (item.exists && allBooks.length < 3) allBooks.push(item.book);
+          try {
+            const searchUrl = `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&editMode=normal&mainSearchType=on&search_text=${isbn}`;
+            const resp = await fetch(searchUrl, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0', 'Accept': 'text/html' }
+            });
+            const html = await resp.text();
+            const statusMatches = [...html.matchAll(/자료상태\s*:[\s\S]*?(대출가능|대출중|대출불가)/g)];
+            if (statusMatches.length === 0) continue; // 홈페이지에 없음 → 스킵
+            const hasAvail = statusMatches.some(m => m[1] === '대출가능');
+            const vCtrlMatch = html.match(/vCtrl="(\d+)"/);
+            const locationMatch = html.match(/자료실\s*:\s*([^<]+)/);
+            item.book._status = hasAvail ? '대출가능' : '대출중';
+            item.book._location = locationMatch ? locationMatch[1].trim() : null;
+            item.book._vCtrl = vCtrlMatch ? vCtrlMatch[1] : null;
+            allBooks.push(item.book);
+          } catch(e) { /* skip */ }
         }
 
         if (allBooks.length === 0) {
@@ -173,9 +183,13 @@ ${bookList}
           comments = JSON.parse(commentRaw.replace(/```json|```/g, '').trim()).map(cleanKorean);
         } catch(e) { /* 멘트 실패해도 책 결과는 반환 */ }
 
-        // 결과 포맷
+        // 결과 포맷 (상태/위치 포함)
         const bookResults = topScored.map(function(item, i) {
           const isbn = item.book.isbn13 || item.book.isbn;
+          const vCtrl = item.book._vCtrl;
+          const detailUrl = vCtrl
+            ? `${JN_BASE}/jnlib/intro/search/detail.do?vLoca=111021&vCtrl=${vCtrl}&isbn=${isbn}&menu_idx=4`
+            : `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`;
           return {
             bookname: item.book.bookname,
             authors: item.book.authors,
@@ -183,8 +197,9 @@ ${bookList}
             publication_year: item.book.publication_year,
             isbn13: isbn,
             bookImageURL: item.book.bookImageURL,
-            loan_count: item.book.loan_count,
-            detailUrl: `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`,
+            status: item.book._status || '확인불가',
+            location: item.book._location || null,
+            detailUrl: detailUrl,
             comment: comments[i] || '',
             score: item.score
           };

@@ -323,6 +323,14 @@ function addBook(book, idx) {
   var hasImg = !!book.bookImageURL;
   var meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
 
+  // 상태 뱃지 (Worker에서 이미 확인됨)
+  var badgeCls = 'badge b-ok';
+  var badgeTxt = '대출가능';
+  if (book.status === '대출중') { badgeCls = 'badge b-warn'; badgeTxt = '대출중'; }
+
+  var locHtml = book.location ? '<div class="book-loc">' + book.location.replace('[종로]','').trim() + '</div>' : '';
+  var linkHtml = book.detailUrl ? '<a class="b-link" href="'+book.detailUrl+'" target="_blank">상세보기</a>' : '';
+
   card.innerHTML = '<div class="book-top">'
     + '<div class="book-img">'
     + (hasImg ? '<img src="'+book.bookImageURL+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : '')
@@ -331,50 +339,16 @@ function addBook(book, idx) {
     + '<div class="book-title">'+(book.bookname||'제목 없음')+'</div>'
     + '<div class="book-author">'+(book.authors||'저자 미상')+'</div>'
     + '<div class="book-meta">'+meta+'</div></div>'
-    + '<div class="book-avail" id="av'+bookIdx+'">'
-    + '<span class="badge b-wait">확인 중</span>'
-    + '<div style="font-size:11px;color:var(--txt-l)">'+libName+'</div></div></div>'
+    + '<div class="book-avail">'
+    + '<span class="'+badgeCls+'">'+badgeTxt+'</span>'
+    + '<div style="font-size:11px;color:var(--txt-l)">'+libName+'</div>'
+    + locHtml + linkHtml + '</div></div>'
     + (book.comment ? '<div class="book-comment">'+esc(book.comment)+'</div>' : '');
 
   row.appendChild(card);
   $('chatBody').appendChild(row);
   scroll();
-  checkLoan(book.isbn13, book.detailUrl, bookIdx);
   bookIdx++;
-}
-
-/* ── 대출 상태 ── */
-function checkLoan(isbn, detailUrl, idx) {
-  var col = $('av'+idx); if(!col) return;
-  var badge = col.querySelector('.badge');
-  fetch(WORKER+'/realcheck?isbn='+isbn).then(function(r){return r.json();}).then(function(d) {
-    if (!d || d.totalCount === 0) {
-      badge.className='badge b-no'; badge.textContent='미소장';
-    } else if (d.status === '대출가능') {
-      badge.className='badge b-ok';
-      badge.textContent = '대출가능 ('+d.availCount+'권)';
-    } else if (d.status === '전권 대출중') {
-      badge.className='badge b-warn';
-      badge.textContent = '전권 대출중';
-    } else {
-      badge.className='badge b-no';
-      badge.textContent = d.status || '확인불가';
-    }
-    if (d && d.location) {
-      var loc = document.createElement('div');
-      loc.className='book-loc';
-      loc.textContent = d.location.replace('[종로]','').trim();
-      col.appendChild(loc);
-    }
-    var url = (d && d.detailUrl) ? d.detailUrl : detailUrl;
-    if (url) {
-      var a = document.createElement('a');
-      a.className='b-link'; a.href=url; a.target='_blank';
-      a.textContent='상세보기'; col.appendChild(a);
-    }
-  }).catch(function() {
-    badge.className='badge b-no'; badge.textContent='확인불가';
-  });
 }
 
 /* ── 추천 실행 ── */
