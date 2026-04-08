@@ -138,8 +138,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,var
   <!-- ══ 메인 화면 ══ -->
   <div class="main-screen" id="mainScreen">
     <div class="mascot"><img src="https://raw.githubusercontent.com/jnlib/find/main/mascot.png" alt="마스코트"></div>
-    <div class="main-title">고민을 말하면<br><span class="hl">책을 찾아드려요</span></div>
-    <p class="main-sub">종로도서관 AI 사서가<br>지금 마음에 맞는 책을 추천해드려요</p>
+    <div class="main-title">AI 사서가<br><span class="hl">책을 찾아드려요!</span></div>
+    <p class="main-sub">종로도서관 AI 사서에게 편하게 말해보세요<br>어떤 말이든 어울리는 책을 찾아드려요</p>
     <div class="main-input-wrap">
       <input class="main-input" id="mainQ" type="text" autocomplete="off" spellcheck="false"
         placeholder="어떤 고민이 있으신가요?"
@@ -180,12 +180,12 @@ var isLoading = false;
 var bookIdx = 0;
 
 var EXAMPLES = [
-  '요즘 마음이 공허하고 허무해요',
-  '직장에서 번아웃이 온 것 같아요',
-  '중요한 결정을 앞두고 있어요',
-  '이별 후에 마음을 추스르고 싶어요',
-  '새로운 시작이 두렵고 자신이 없어요',
-  '잠이 안 올 때 읽을 잔잔한 책',
+  '요즘 머릿속이 너무 복잡해요',
+  '가볍게 읽을 만한 에세이 없을까?',
+  '5살 아이한테 읽어줄 그림책 추천해줘',
+  '주식 처음인데 뭐부터 읽어야 할지 모르겠어',
+  '요리 완전 초보거든. 따라하기 쉬운 책 있어?',
+  '한국사 재밌게 공부할 수 있는 책 알려줘',
 ];
 
 var LOAD_MSGS = [
