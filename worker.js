@@ -279,12 +279,11 @@ ${bookList}
   }
 };
 
-// 비한국어 단어 제거 — 한글/숫자/기본기호만 허용
+// 비한국어/비영어 문자 제거 (터키어/중국어/일본어/러시아어 등)
 function cleanKorean(text) {
   if (!text) return text;
-  // 한글이 아닌 외래 단어(라틴/한자/일본어 등)를 통째로 제거
   return text
-    .replace(/[a-zA-ZÀ-žΑ-ωА-я\u4E00-\u9FFF\u3040-\u30FF\u3400-\u4DBF]+/g, '')
+    .replace(/[À-žΑ-ωА-я\u4E00-\u9FFF\u3040-\u30FF\u3400-\u4DBF]+/g, '')
     .replace(/[.:]{3,}/g, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
