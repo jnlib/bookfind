@@ -3,83 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>서재 — 고민을 말하면 책을 찾아드려요</title>
+<title>서재 — 종로도서관 AI 도서 추천</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#07213a;--teal:#00cfc0;--teal2:#00a898;--blue:#3182ff;
-  --bg:linear-gradient(160deg,#eef3ff,#e8f6f4);
+  --bg-from:#eef3ff;--bg-to:#e8f6f4;
   --surface:#fff;--surface2:#f4f7fb;
   --txt:#1a2a3a;--txt-m:#5a7088;--txt-l:#94a8bb;
   --border:rgba(0,207,192,.15);
   --green:#0d9e6e;--green-bg:#e2f7ef;
   --red:#d44;--red-bg:#fdeaea;
+  --orange:#e68a00;--orange-bg:#fff6e6;
   --shadow:0 3px 16px rgba(7,33,58,.07);
   --radius:18px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;touch-action:manipulation}
-body{font-family:'Noto Sans KR',sans-serif;background:#eef3ff;background:var(--bg);color:var(--txt)}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,var(--bg-from),var(--bg-to));color:var(--txt)}
+.shell{width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;position:relative}
 
-.shell{width:100%;max-width:560px;height:100vh;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden}
+/* ══════ 메인 화면 ══════ */
+.main-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 28px;text-align:center;transition:opacity .5s,transform .5s;overflow-y:auto}
+.main-screen.hide{opacity:0;transform:translateY(-30px);pointer-events:none;position:absolute;inset:0}
 
-/* ── 헤더 ── */
-.hdr{flex-shrink:0;background:var(--navy);padding:18px 24px;display:flex;align-items:center;gap:14px}
-.hdr-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.hdr-av img{width:28px;height:28px;object-fit:contain;filter:brightness(10)}
-.hdr-info{flex:1}
-.hdr-name{font-size:17px;font-weight:700;color:#fff}
-.hdr-status{font-size:13px;color:var(--teal);display:flex;align-items:center;gap:5px;margin-top:2px}
-.hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
-.hdr-new{background:none;border:1.5px solid rgba(255,255,255,.25);color:#fff;font-size:13px;padding:7px 16px;border-radius:20px;cursor:pointer;font-family:inherit;transition:.2s}
-.hdr-new:hover{background:rgba(255,255,255,.1)}
+.mascot{width:100px;height:100px;border-radius:50%;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 24px rgba(0,207,192,.2);border:3px solid rgba(0,207,192,.3);animation:float 3s ease-in-out infinite}
+.mascot img{width:100%;height:100%;object-fit:cover}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
-/* ── 채팅 영역 ── */
-.chat{flex:1;overflow-y:auto;padding:20px 18px;scroll-behavior:smooth}
-.chat::-webkit-scrollbar{width:3px}
-.chat::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
+.main-title{font-size:28px;font-weight:900;color:var(--navy);line-height:1.5;margin-bottom:8px}
+.main-title .hl{background:linear-gradient(135deg,var(--teal),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.main-sub{font-size:16px;color:var(--txt-m);line-height:1.7;margin-bottom:32px;font-weight:300}
 
-/* ── 메시지 행 ── */
+.main-input-wrap{width:100%;max-width:440px;position:relative;margin-bottom:28px}
+.main-input{width:100%;background:var(--surface);border:2px solid rgba(0,207,192,.2);border-radius:16px;padding:18px 60px 18px 22px;font-size:17px;font-family:inherit;color:var(--txt);outline:none;box-shadow:var(--shadow);transition:.3s}
+.main-input::placeholder{color:var(--txt-l);font-weight:300}
+.main-input:focus{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,207,192,.1),var(--shadow)}
+.main-send{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:48px;height:48px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,207,192,.3);transition:.15s}
+.main-send:hover{transform:translateY(-50%) scale(1.05)}
+.main-send:active{transform:translateY(-50%) scale(.92)}
+
+.chip-label{font-size:13px;color:var(--txt-l);margin-bottom:12px;font-weight:400}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:440px}
+.chip{background:rgba(0,207,192,.06);border:1.5px solid rgba(0,207,192,.18);color:var(--navy);font-size:15px;font-weight:500;padding:11px 18px;border-radius:24px;cursor:pointer;transition:.2s;font-family:inherit;line-height:1.4}
+.chip:hover{background:rgba(0,207,192,.15);border-color:var(--teal)}
+.chip:active{transform:scale(.96)}
+
+/* ══════ 채팅 화면 ══════ */
+.chat-screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.chat-screen.show{display:flex}
+
+.chat-hdr{flex-shrink:0;background:var(--navy);padding:14px 20px;display:flex;align-items:center;gap:12px}
+.chat-av{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,207,192,.4);flex-shrink:0}
+.chat-av img{width:100%;height:100%;object-fit:cover}
+.chat-info{flex:1}
+.chat-name{font-size:16px;font-weight:700;color:#fff}
+.chat-status{font-size:12px;color:var(--teal);display:flex;align-items:center;gap:5px;margin-top:1px}
+.chat-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+.chat-back{background:none;border:1.5px solid rgba(255,255,255,.25);color:#fff;font-size:13px;padding:7px 16px;border-radius:20px;cursor:pointer;font-family:inherit;transition:.2s}
+.chat-back:hover{background:rgba(255,255,255,.1)}
+
+.chat-body{flex:1;overflow-y:auto;padding:20px 18px;scroll-behavior:smooth}
+.chat-body::-webkit-scrollbar{width:3px}
+.chat-body::-webkit-scrollbar-thumb{background:var(--teal);border-radius:3px}
+
+/* ── 메시지 ── */
 .brow{display:flex;gap:10px;margin-bottom:14px;animation:popIn .35s cubic-bezier(.175,.885,.32,1.275)}
 .brow.ai{align-items:flex-start}
 .brow.usr{justify-content:flex-end}
+.msg-av{width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid rgba(0,207,192,.3)}
+.msg-av img{width:100%;height:100%;object-fit:cover}
 
-.av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue));display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.av img{width:24px;height:24px;filter:brightness(10)}
-
-/* ── 버블 ── */
 .bbl{max-width:82%;padding:14px 18px;line-height:1.85;font-size:16px;word-break:keep-all}
 .bbl.ai{background:var(--surface);border:1px solid var(--border);border-radius:5px 18px 18px 18px;box-shadow:var(--shadow);color:var(--txt)}
 .bbl.usr{background:linear-gradient(135deg,var(--teal2),var(--blue));border-radius:18px 18px 5px 18px;color:#fff;font-weight:500}
-.bbl-name{font-size:12px;font-weight:700;color:var(--teal2);margin-bottom:6px;letter-spacing:.05em}
-
-/* ── 타이핑 커서 ── */
+.bbl-name{font-size:11px;font-weight:700;color:var(--teal2);margin-bottom:5px;letter-spacing:.05em}
 .cursor{display:inline-block;width:2px;height:1em;background:var(--teal);margin-left:2px;animation:blink 1s infinite;vertical-align:text-bottom}
 @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
 
-/* ── 로딩 행 ── */
+/* ── 로딩 ── */
 .lrow{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;animation:popIn .35s}
-.lbbl{background:var(--surface);border:1px solid var(--border);border-radius:5px 18px 18px 18px;padding:18px 22px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
-.lring{width:42px;height:42px;position:relative;flex-shrink:0}
+.lbbl{background:var(--surface);border:1px solid var(--border);border-radius:5px 18px 18px 18px;padding:16px 20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:14px}
+.lring{width:40px;height:40px;position:relative;flex-shrink:0}
 .lring-c{width:100%;height:100%;border:3px solid rgba(0,207,192,.15);border-top-color:var(--teal);border-radius:50%;animation:spin 1.2s linear infinite}
-.lring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;filter:brightness(0) saturate(100%) invert(35%) sepia(90%) saturate(500%) hue-rotate(140deg);animation:bounce 1s ease-in-out infinite}
+.lring img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;object-fit:cover;border-radius:50%}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes bounce{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-55%) scale(1.1)}}
-.ltxt{font-size:15px;color:var(--txt-m);font-weight:400}
+.ltxt{font-size:15px;color:var(--txt-m)}
 .ldots{display:inline-flex;gap:4px;margin-left:4px}
 .ldots span{width:5px;height:5px;border-radius:50%;background:var(--teal);animation:dotPulse 1.2s infinite}
 .ldots span:nth-child(2){animation-delay:.2s}
 .ldots span:nth-child(3){animation-delay:.4s}
 @keyframes dotPulse{0%,60%,100%{opacity:.2;transform:scale(.8)}30%{opacity:1;transform:scale(1.2)}}
 
-/* ── 예시 칩 ── */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;animation:popIn .4s}
-.chip{background:rgba(0,207,192,.08);border:1.5px solid rgba(0,207,192,.2);color:var(--navy);font-size:15px;font-weight:500;padding:12px 18px;border-radius:24px;cursor:pointer;transition:.2s;font-family:inherit;line-height:1.4}
-.chip:hover{background:rgba(0,207,192,.18);border-color:var(--teal)}
-.chip:active{transform:scale(.96)}
-
-/* ── 책 카드 (채팅 내) ── */
-.book-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:8px;opacity:0;transform:translateY(10px);animation:fadeUp .4s forwards}
+/* ── 책 카드 ── */
+.book-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:8px;opacity:0;transform:translateY(10px);animation:fadeUp .5s forwards}
 .book-top{display:flex}
 .book-img{width:80px;min-height:115px;background:var(--surface2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .book-img img{width:100%;height:100%;object-fit:cover}
@@ -88,68 +105,68 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef3ff;background:var(--b
 .book-title{font-size:17px;font-weight:700;line-height:1.5;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .book-author{font-size:14px;color:var(--txt-m);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .book-meta{font-size:12px;color:var(--txt-l)}
-.book-avail{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;border-left:1px solid rgba(0,207,192,.1);min-width:82px;gap:4px;background:var(--surface2)}
-.badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;white-space:nowrap}
+.book-avail{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;border-left:1px solid rgba(0,207,192,.1);min-width:84px;gap:4px;background:var(--surface2)}
+.badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;white-space:nowrap}
 .b-ok{background:var(--green-bg);color:var(--green)}
 .b-no{background:var(--red-bg);color:var(--red)}
 .b-wait{background:#f0f2f5;color:var(--txt-l);animation:pulse 1.3s infinite}
+.b-warn{background:var(--orange-bg);color:var(--orange)}
 @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
-.b-link{font-size:12px;color:var(--blue);text-decoration:none;padding:4px 10px;border-radius:6px;background:rgba(49,130,255,.06);font-weight:500;transition:.15s}
+.b-link{font-size:12px;color:var(--blue);text-decoration:none;padding:4px 10px;border-radius:6px;background:rgba(49,130,255,.06);font-weight:500;transition:.15s;margin-top:2px}
 .b-link:hover{background:rgba(49,130,255,.15)}
 .book-loc{font-size:11px;color:var(--txt-l);text-align:center;margin-top:2px}
 .book-comment{border-top:1px solid rgba(0,207,192,.1);padding:12px 16px;font-size:15px;line-height:1.8;color:var(--txt-m);background:linear-gradient(135deg,rgba(0,207,192,.03),rgba(49,130,255,.03))}
 
-/* ── 입력 영역 ── */
-.iarea{flex-shrink:0;padding:12px 18px 24px;background:rgba(238,243,255,.9);backdrop-filter:blur(10px)}
-.ibox-wrap{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid rgba(0,207,192,.2);border-radius:16px;padding:6px 6px 6px 20px;box-shadow:var(--shadow);transition:.2s}
-.ibox-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,207,192,.1)}
-.ibox{flex:1;background:none;border:none;outline:none;font-family:'Noto Sans KR',sans-serif;font-size:17px;color:var(--txt);padding:12px 0;resize:none;min-height:24px;max-height:100px;line-height:1.5}
-.ibox::placeholder{color:var(--txt-l);font-weight:300}
-.sbtn{width:50px;height:50px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;box-shadow:0 4px 12px rgba(0,207,192,.3)}
-.sbtn:hover{transform:scale(1.05)}
-.sbtn:active{transform:scale(.92)}
-.sbtn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+/* ── 하단 입력 ── */
+.chat-input{flex-shrink:0;padding:10px 18px 22px;background:rgba(238,243,255,.95);backdrop-filter:blur(10px)}
+.ci-wrap{display:flex;align-items:center;gap:8px;background:var(--surface);border:2px solid rgba(0,207,192,.2);border-radius:14px;padding:5px 5px 5px 18px;box-shadow:var(--shadow);transition:.2s}
+.ci-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 4px rgba(0,207,192,.1)}
+.ci-input{flex:1;background:none;border:none;outline:none;font-family:inherit;font-size:16px;color:var(--txt);padding:10px 0;resize:none;min-height:24px;max-height:80px;line-height:1.5}
+.ci-input::placeholder{color:var(--txt-l);font-weight:300}
+.ci-send{width:46px;height:46px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--blue));color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,207,192,.3);transition:.15s}
+.ci-send:hover{transform:scale(1.05)}
+.ci-send:active{transform:scale(.92)}
+.ci-send:disabled{opacity:.3;cursor:not-allowed;transform:none}
 
-/* ── 애니메이션 ── */
-@keyframes popIn{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-
-@media(max-width:480px){
-  .chat{padding:16px 14px}
-  .iarea{padding:10px 14px 20px}
-}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <div class="hdr">
-    <div class="hdr-av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>
-    <div class="hdr-info">
-      <div class="hdr-name">AI 사서 — 서재</div>
-      <div class="hdr-status"><span class="hdr-dot" id="sDot"></span><span id="sLib">연결 중…</span></div>
+  <!-- ══ 메인 화면 ══ -->
+  <div class="main-screen" id="mainScreen">
+    <div class="mascot"><img src="https://raw.githubusercontent.com/jnlib/find/main/mascot.png" alt="마스코트"></div>
+    <div class="main-title">고민을 말하면<br><span class="hl">책을 찾아드려요</span></div>
+    <p class="main-sub">종로도서관 AI 사서가<br>지금 마음에 맞는 책을 추천해드려요</p>
+    <div class="main-input-wrap">
+      <input class="main-input" id="mainQ" type="text" autocomplete="off" spellcheck="false"
+        placeholder="어떤 고민이 있으신가요?"
+        onkeydown="if(event.key==='Enter')goMain()">
+      <button class="main-send" onclick="goMain()">&#10140;</button>
     </div>
-    <button class="hdr-new" onclick="goHome()">새 대화</button>
+    <div class="chip-label">이런 고민이 있으신가요?</div>
+    <div class="chips" id="mainChips"></div>
   </div>
 
-  <div class="chat" id="chat">
-    <!-- 인사 메시지 -->
-    <div class="brow ai" id="greeting">
-      <div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>
-      <div class="bbl ai">
-        <div class="bbl-name">AI 사서</div>
-        안녕하세요! 종로도서관 AI 사서예요.<br>
-        지금 어떤 고민이 있으신가요?<br>
-        아래에서 골라보시거나, 직접 말씀해주세요.
+  <!-- ══ 채팅 화면 ══ -->
+  <div class="chat-screen" id="chatScreen">
+    <div class="chat-hdr">
+      <div class="chat-av"><img src="https://raw.githubusercontent.com/jnlib/find/main/mascot.png" alt=""></div>
+      <div class="chat-info">
+        <div class="chat-name">AI 사서</div>
+        <div class="chat-status"><span class="chat-dot"></span>종로도서관 연결됨</div>
       </div>
+      <button class="chat-back" onclick="goBack()">처음으로</button>
     </div>
-    <div class="chips" id="chips"></div>
-  </div>
-
-  <div class="iarea">
-    <div class="ibox-wrap">
-      <textarea id="q" class="ibox" rows="1" placeholder="고민이나 상황을 편하게 말해주세요" onkeydown="handleKey(event)"></textarea>
-      <button class="sbtn" id="goBtn" onclick="go()">&#10140;</button>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input">
+      <div class="ci-wrap">
+        <textarea class="ci-input" id="chatQ" rows="1" placeholder="다른 고민도 말씀해보세요"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();goChat();}"></textarea>
+        <button class="ci-send" id="chatBtn" onclick="goChat()">&#10140;</button>
+      </div>
     </div>
   </div>
 
@@ -157,8 +174,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:#eef3ff;background:var(--b
 
 <script>
 var WORKER = 'https://seojae.hdh1231.workers.dev';
+var MASCOT = 'https://raw.githubusercontent.com/jnlib/find/main/mascot.png';
 var libName = '종로도서관';
 var isLoading = false;
+var bookIdx = 0;
 
 var EXAMPLES = [
   '요즘 마음이 공허하고 허무해요',
@@ -169,282 +188,235 @@ var EXAMPLES = [
   '잠이 안 올 때 읽을 잔잔한 책',
 ];
 
-var LOADING_MSGS = [
+var LOAD_MSGS = [
   '고민을 분석하고 있어요',
-  '관련 책을 검색 중이에요',
-  '종로도서관 소장 여부를 확인해요',
-  '추천 멘트를 작성하고 있어요',
-  '거의 다 됐어요!',
+  '어울리는 책을 찾고 있어요',
+  '종로도서관에 있는지 확인해요',
+  '추천 이유를 정리하고 있어요',
 ];
 
 var $ = function(id) { return document.getElementById(id); };
 
 /* ── 초기화 ── */
-function init() {
-  // 예시 칩 렌더
+(function init() {
   var html = '';
-  EXAMPLES.forEach(function(txt) {
-    html += '<button class="chip" onclick="fillAndGo(\'' + txt.replace(/'/g,"\\'") + '\')">' + txt + '</button>';
+  EXAMPLES.forEach(function(t) {
+    html += '<button class="chip" onclick="startWith(\'' + t.replace(/'/g,"\\'") + '\')">' + t + '</button>';
   });
-  $('chips').innerHTML = html;
+  $('mainChips').innerHTML = html;
 
-  // 상태 확인
   fetch(WORKER + '/libcode').then(function(r){return r.json();}).then(function(d) {
-    libName = d.libName;
-    $('sDot').style.background = 'var(--teal)';
-    $('sLib').textContent = libName + ' 연결됨';
-  }).catch(function() {
-    $('sLib').textContent = '연결 오류';
-  });
+    libName = d.libName || '종로도서관';
+  }).catch(function(){});
 
-  // 텍스트영역 자동 높이
-  $('q').addEventListener('input', function() {
+  $('chatQ').addEventListener('input', function() {
     this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
   });
+})();
+
+/* ── 화면 전환 ── */
+function showChat() {
+  $('mainScreen').classList.add('hide');
+  $('chatScreen').classList.add('show');
 }
 
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); }
-}
-
-function fillAndGo(txt) { $('q').value = txt; go(); }
-
-/* ── 새 대화 ── */
-function goHome() {
+function goBack() {
   if (isLoading) return;
-  $('chat').innerHTML = '';
-  // 인사 다시
-  addAiBubble('안녕하세요! 종로도서관 AI 사서예요.\n지금 어떤 고민이 있으신가요?\n아래에서 골라보시거나, 직접 말씀해주세요.');
-  // 칩 다시
-  var chipDiv = document.createElement('div');
-  chipDiv.className = 'chips';
-  var html = '';
-  EXAMPLES.forEach(function(txt) {
-    html += '<button class="chip" onclick="fillAndGo(\'' + txt.replace(/'/g,"\\'") + '\')">' + txt + '</button>';
-  });
-  chipDiv.innerHTML = html;
-  $('chat').appendChild(chipDiv);
-  $('q').value = '';
-  scrollBottom();
+  $('chatScreen').classList.remove('show');
+  $('mainScreen').classList.remove('hide');
+  $('chatBody').innerHTML = '';
+  $('mainQ').value = '';
+  bookIdx = 0;
 }
 
-/* ── 채팅 요소 추가 ── */
-function addUserBubble(text) {
+/* ── 메인에서 시작 ── */
+function startWith(txt) { $('mainQ').value = txt; goMain(); }
+
+function goMain() {
+  var q = $('mainQ').value.trim();
+  if (!q || isLoading) return;
+  showChat();
+  setTimeout(function() { doRecommend(q); }, 400);
+}
+
+function goChat() {
+  var q = $('chatQ').value.trim();
+  if (!q || isLoading) return;
+  $('chatQ').value = '';
+  $('chatQ').style.height = 'auto';
+  doRecommend(q);
+}
+
+/* ── 채팅 요소 ── */
+function addUser(text) {
   var row = document.createElement('div');
   row.className = 'brow usr';
-  row.innerHTML = '<div class="bbl usr">' + escHtml(text) + '</div>';
-  $('chat').appendChild(row);
-  scrollBottom();
+  row.innerHTML = '<div class="bbl usr">' + esc(text) + '</div>';
+  $('chatBody').appendChild(row);
+  scroll();
 }
 
-function addAiBubble(text, skipTyping) {
+function addAi(text, skip) {
   var row = document.createElement('div');
   row.className = 'brow ai';
   var bbl = document.createElement('div');
   bbl.className = 'bbl ai';
   bbl.innerHTML = '<div class="bbl-name">AI 사서</div>';
-  var content = document.createElement('span');
-  bbl.appendChild(content);
-  row.innerHTML = '<div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>';
+  var span = document.createElement('span');
+  bbl.appendChild(span);
+  row.innerHTML = '<div class="msg-av"><img src="'+MASCOT+'" alt=""></div>';
   row.appendChild(bbl);
-  $('chat').appendChild(row);
+  $('chatBody').appendChild(row);
 
-  if (skipTyping) {
-    content.innerHTML = text.replace(/\n/g, '<br>');
-    scrollBottom();
-    return Promise.resolve();
-  }
+  if (skip) { span.innerHTML = text.replace(/\n/g,'<br>'); scroll(); return Promise.resolve(); }
 
-  // 타이핑 효과
   return new Promise(function(resolve) {
-    var cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    bbl.appendChild(cursor);
-    var chars = text.split('');
-    var i = 0;
-    var timer = setInterval(function() {
+    var cur = document.createElement('span');
+    cur.className = 'cursor';
+    bbl.appendChild(cur);
+    var chars = text.split(''), i = 0;
+    var t = setInterval(function() {
       if (i < chars.length) {
-        if (chars[i] === '\n') {
-          content.appendChild(document.createElement('br'));
-        } else {
-          content.appendChild(document.createTextNode(chars[i]));
-        }
-        i++;
-        scrollBottom();
+        if (chars[i] === '\n') span.appendChild(document.createElement('br'));
+        else span.appendChild(document.createTextNode(chars[i]));
+        i++; scroll();
       } else {
-        clearInterval(timer);
-        if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+        clearInterval(t);
+        if (cur.parentNode) cur.remove();
         resolve();
       }
-    }, 22);
+    }, 20);
   });
 }
 
-function addLoading() {
+function addLoad() {
   var row = document.createElement('div');
-  row.className = 'lrow';
-  row.id = 'loadRow';
-  row.innerHTML = '<div class="av"><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>'
-    + '<div class="lbbl">'
-    + '<div class="lring"><div class="lring-c"></div><img src="https://jnlib.sen.go.kr/resources/homepage/jnlib/img/jnlib_logo.png" alt=""></div>'
-    + '<div><div class="ltxt" id="loadTxt">' + LOADING_MSGS[0] + '<span class="ldots"><span></span><span></span><span></span></span></div></div>'
-    + '</div>';
-  $('chat').appendChild(row);
-  scrollBottom();
-
-  // 메시지 순환
-  var msgIdx = 0;
-  var loadTimer = setInterval(function() {
-    msgIdx = (msgIdx + 1) % LOADING_MSGS.length;
+  row.className = 'lrow'; row.id = 'loadRow';
+  row.innerHTML = '<div class="msg-av"><img src="'+MASCOT+'" alt=""></div>'
+    + '<div class="lbbl"><div class="lring"><div class="lring-c"></div>'
+    + '<img src="'+MASCOT+'" alt=""></div>'
+    + '<div><div class="ltxt" id="loadTxt">'+LOAD_MSGS[0]
+    + '<span class="ldots"><span></span><span></span><span></span></span></div></div></div>';
+  $('chatBody').appendChild(row); scroll();
+  var mi = 0;
+  return setInterval(function() {
+    mi = (mi+1) % LOAD_MSGS.length;
     var el = $('loadTxt');
-    if (el) el.innerHTML = LOADING_MSGS[msgIdx] + '<span class="ldots"><span></span><span></span><span></span></span>';
+    if (el) el.innerHTML = LOAD_MSGS[mi] + '<span class="ldots"><span></span><span></span><span></span></span>';
   }, 2500);
-  return loadTimer;
 }
 
-function removeLoading(timer) {
+function rmLoad(timer) {
   clearInterval(timer);
   var el = $('loadRow');
-  if (el) el.parentNode.removeChild(el);
+  if (el) el.remove();
 }
 
-function addBookCard(book, idx) {
+function addBook(book, idx) {
   var row = document.createElement('div');
   row.className = 'brow ai';
-  row.style.paddingLeft = '50px';
-
+  row.style.paddingLeft = '48px';
   var card = document.createElement('div');
   card.className = 'book-card';
-  card.style.animationDelay = (idx * 120) + 'ms';
-
+  card.style.animationDelay = (idx * 100) + 'ms';
   var hasImg = !!book.bookImageURL;
   var meta = [book.publisher, book.publication_year].filter(Boolean).join(' · ');
 
   card.innerHTML = '<div class="book-top">'
     + '<div class="book-img">'
     + (hasImg ? '<img src="'+book.bookImageURL+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : '')
-    + '<div class="ph" style="'+(hasImg?'display:none':'display:flex')+'">' + (book.bookname ? book.bookname.slice(0,1) : '?') + '</div></div>'
+    + '<div class="ph" style="'+(hasImg?'display:none':'display:flex')+'">'+(book.bookname?book.bookname.slice(0,1):'?')+'</div></div>'
     + '<div class="book-body">'
     + '<div class="book-title">'+(book.bookname||'제목 없음')+'</div>'
     + '<div class="book-author">'+(book.authors||'저자 미상')+'</div>'
-    + '<div class="book-meta">'+meta+'</div>'
-    + '</div>'
-    + '<div class="book-avail" id="av'+idx+'">'
+    + '<div class="book-meta">'+meta+'</div></div>'
+    + '<div class="book-avail" id="av'+bookIdx+'">'
     + '<span class="badge b-wait">확인 중</span>'
-    + '<div style="font-size:11px;color:var(--txt-l)">'+libName+'</div>'
-    + '</div>'
-    + '</div>'
-    + (book.comment ? '<div class="book-comment">' + escHtml(book.comment) + '</div>' : '');
+    + '<div style="font-size:11px;color:var(--txt-l)">'+libName+'</div></div></div>'
+    + (book.comment ? '<div class="book-comment">'+esc(book.comment)+'</div>' : '');
 
   row.appendChild(card);
-  $('chat').appendChild(row);
-  scrollBottom();
+  $('chatBody').appendChild(row);
+  scroll();
+  checkLoan(book.isbn13, book.detailUrl, bookIdx);
+  bookIdx++;
 }
 
 /* ── 대출 상태 ── */
-function updateLoanStatus(isbn, detailUrl, idx) {
+function checkLoan(isbn, detailUrl, idx) {
   var col = $('av'+idx); if(!col) return;
   var badge = col.querySelector('.badge');
-  fetch(WORKER + '/realcheck?isbn=' + isbn).then(function(r){return r.json();}).then(function(result) {
-    if (!result) {
-      badge.className='badge b-no'; badge.textContent='확인 불가';
-    } else if (result.totalCount === 0) {
+  fetch(WORKER+'/realcheck?isbn='+isbn).then(function(r){return r.json();}).then(function(d) {
+    if (!d || d.totalCount === 0) {
       badge.className='badge b-no'; badge.textContent='미소장';
-    } else if (result.available) {
+    } else if (d.status === '대출가능') {
       badge.className='badge b-ok';
-      badge.textContent = result.availCount + '/' + result.totalCount + ' 가능';
+      badge.textContent = '대출가능 ('+d.availCount+'권)';
+    } else if (d.status === '전권 대출중') {
+      badge.className='badge b-warn';
+      badge.textContent = '전권 대출중';
     } else {
-      badge.className='badge b-no'; badge.textContent='전권 대출 중';
+      badge.className='badge b-no';
+      badge.textContent = d.status || '확인불가';
     }
-    if (result && result.location) {
+    if (d && d.location) {
       var loc = document.createElement('div');
-      loc.className = 'book-loc';
-      loc.textContent = result.location.replace('[종로]','').trim();
+      loc.className='book-loc';
+      loc.textContent = d.location.replace('[종로]','').trim();
       col.appendChild(loc);
     }
-    var url = (result && result.detailUrl) ? result.detailUrl : detailUrl;
+    var url = (d && d.detailUrl) ? d.detailUrl : detailUrl;
     if (url) {
-      var link = document.createElement('a');
-      link.className = 'b-link'; link.href = url; link.target = '_blank';
-      link.textContent = '상세보기';
-      col.appendChild(link);
+      var a = document.createElement('a');
+      a.className='b-link'; a.href=url; a.target='_blank';
+      a.textContent='상세보기'; col.appendChild(a);
     }
-  }).catch(function(){
-    badge.className='badge b-no'; badge.textContent='확인 불가';
+  }).catch(function() {
+    badge.className='badge b-no'; badge.textContent='확인불가';
   });
 }
 
-/* ── 메인 실행 ── */
-function go() {
-  var q = $('q').value.trim();
-  if (!q || isLoading) return;
-
+/* ── 추천 실행 ── */
+function doRecommend(query) {
   isLoading = true;
-  $('goBtn').disabled = true;
-  $('q').value = '';
-  $('q').style.height = 'auto';
+  $('chatBtn').disabled = true;
+  addUser(query);
+  var lt = addLoad();
 
-  // 칩 숨기기
-  var chips = $('chat').querySelectorAll('.chips');
-  chips.forEach(function(c) { c.style.display = 'none'; });
-
-  // 사용자 버블
-  addUserBubble(q);
-
-  // 로딩
-  var loadTimer = addLoading();
-
-  // 추천 요청
-  fetch(WORKER + '/recommend', {
+  fetch(WORKER+'/recommend', {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ query: q })
+    body: JSON.stringify({query:query})
   }).then(function(r) {
     if (!r.ok) return r.json().then(function(d){throw new Error(d.error||'오류');});
     return r.json();
   }).then(function(rec) {
-    removeLoading(loadTimer);
-
-    // AI 사서 공감 멘트 (타이핑)
-    return addAiBubble(rec.reply || '관련 책을 찾아볼게요.').then(function() {
+    rmLoad(lt);
+    return addAi(rec.reply || '관련 책을 찾아볼게요.').then(function() {
       var books = rec.books || [];
       if (!books.length) {
-        return addAiBubble(rec.message || '도서관에서 관련 책을 찾지 못했어요.\n다른 표현으로 다시 말씀해주세요!', true);
+        return addAi(rec.message || '아쉽지만 관련 책을 찾지 못했어요.\n다른 표현으로 다시 말씀해주세요!', true).then(done);
       }
-
-      // 책 카드들
       books.forEach(function(b, i) {
         setTimeout(function() {
-          addBookCard(b, i);
-          updateLoanStatus(b.isbn13, b.detailUrl, i);
-        }, i * 300);
+          addBook(b, i);
+          if (i === books.length - 1) {
+            setTimeout(function() {
+              addAi('다른 고민이 있으시면 편하게 말씀해주세요!', true).then(done);
+            }, 500);
+          }
+        }, i * 350);
       });
-
-      // 마무리 멘트
-      setTimeout(function() {
-        addAiBubble('다른 고민이 있으시면 언제든 말씀해주세요!', true);
-        isLoading = false;
-        $('goBtn').disabled = false;
-      }, books.length * 300 + 400);
     });
   }).catch(function(e) {
-    removeLoading(loadTimer);
-    addAiBubble('죄송해요, 오류가 발생했어요.\n' + e.message + '\n다시 시도해주세요!', true);
-    isLoading = false;
-    $('goBtn').disabled = false;
+    rmLoad(lt);
+    addAi('죄송해요, 문제가 생겼어요.\n잠시 후 다시 시도해주세요!', true).then(done);
   });
 }
 
-function scrollBottom() {
-  var c = $('chat');
-  setTimeout(function(){ c.scrollTop = c.scrollHeight; }, 50);
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-init();
+function done() { isLoading = false; $('chatBtn').disabled = false; }
+function scroll() { var c = $('chatBody'); setTimeout(function(){ c.scrollTop = c.scrollHeight; }, 50); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
 </script>
 </body>
 </html>

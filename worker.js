@@ -232,15 +232,23 @@ ${bookList}
         // 자료상태 필드에서 실제 대출 상태 파싱
         const statusMatches = [...html.matchAll(/자료상태\s*:[\s\S]*?(대출가능|대출중|대출불가)/g)];
         const availCount = statusMatches.filter(m => m[1] === '대출가능').length;
+        const loanCount = statusMatches.filter(m => m[1] === '대출중').length;
         const totalCount = statusMatches.length;
         const available = availCount > 0;
+        // 상태 텍스트
+        let status = '미소장';
+        if (totalCount > 0) {
+          if (availCount > 0) status = '대출가능';
+          else if (loanCount > 0) status = '전권 대출중';
+          else status = '대출불가';
+        }
 
         const locationMatch = html.match(/자료실\s*:\s*([^<]+)/);
         const location = locationMatch ? locationMatch[1].trim() : null;
         const detailUrl = vCtrl
           ? `${JN_BASE}/jnlib/intro/search/detail.do?vLoca=111021&vCtrl=${vCtrl}&isbn=${isbn}&menu_idx=4`
           : `${JN_BASE}/jnlib/intro/search/index.do?menu_idx=4&locExquery=111021&mainSearchType=on&search_text=${isbn}`;
-        return json({ available, availCount, totalCount, location, vCtrl, detailUrl });
+        return json({ status, available, availCount, loanCount, totalCount, location, vCtrl, detailUrl });
       } catch(e) { return jsonErr(e.message, 500); }
     }
 
