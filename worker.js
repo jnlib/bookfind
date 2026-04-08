@@ -106,7 +106,7 @@ reply 규칙:
             .catch(() => ({ book: item.book, exists: false }));
         }));
         for (const item of existResults) {
-          if (item.exists && allBooks.length < 5) allBooks.push(item.book);
+          if (item.exists && allBooks.length < 3) allBooks.push(item.book);
         }
 
         if (allBooks.length === 0) {
@@ -137,7 +137,7 @@ reply 규칙:
         });
 
         scored.sort((a, b) => b.score - a.score);
-        const topScored = scored.slice(0, 5);
+        const topScored = scored.slice(0, 3);
 
         // ④ Workers AI 2차: 각 책별 추천 멘트 생성
         const bookList = topScored.map((item, i) =>
@@ -166,7 +166,7 @@ ${bookList}
 - 예시: "일상 속 작은 변화가 얼마나 큰 힘을 가지는지 알려주는 책이에요. 지친 마음에 다시 시작할 용기를 줄 거예요."
 
 반드시 이 JSON 형식만 반환 (책 수만큼):
-["1번 책 멘트","2번 책 멘트","3번 책 멘트","4번 책 멘트","5번 책 멘트"]` }
+["1번 책 멘트","2번 책 멘트","3번 책 멘트"]` }
             ]
           });
           const commentRaw = typeof commentResult.response === 'string' ? commentResult.response : JSON.stringify(commentResult.response);
